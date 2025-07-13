@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PCDN 收益计算器</title>
+    <title>带宽收益与成本计算器</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,7 +12,7 @@
             color: #333;
         }
         .container {
-            max-width: 750px; /* 再次加宽以容纳更多内容 */
+            max-width: 750px;
             margin: 0 auto;
             background-color: #fff;
             padding: 30px;
@@ -33,7 +33,7 @@
         }
         .input-group input[type="number"],
         .input-group select {
-            width: calc(100% - 120px); /* Adjust width for input + unit select */
+            width: calc(100% - 120px);
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -42,11 +42,11 @@
             vertical-align: middle;
         }
         .input-group select {
-            width: 100px; /* Width for unit select */
+            width: 100px;
             margin-left: 5px;
         }
         .input-group .half-width {
-            width: calc(50% - 10px); /* For price input and unit select */
+            width: calc(50% - 10px);
         }
         .input-group .select-group {
             width: calc(50% - 10px);
@@ -60,19 +60,19 @@
             margin-bottom: 8px;
         }
         .cost-item label {
-            flex: 2; /* 标签占据更多空间 */
-            margin-bottom: 0; /* 移除默认的下边距 */
-            font-weight: normal; /* 标签不需要粗体 */
-            line-height: 38px; /* 确保与输入框对齐 */
+            flex: 2;
+            margin-bottom: 0;
+            font-weight: normal;
+            line-height: 38px;
         }
         .cost-item input[type="number"] {
-            flex: 0 0 80px; /* 数量输入框固定宽度 */
+            flex: 0 0 80px;
             width: auto;
             margin-left: 10px;
             text-align: center;
         }
         .cost-item input[type="text"] {
-            flex: 1; /* 型号名称输入框 */
+            flex: 1;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -80,17 +80,17 @@
             margin-right: 10px;
         }
         .cost-item .price-input {
-            flex: 0 0 100px; /* 单价输入框固定宽度 */
+            flex: 0 0 100px;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
             text-align: right;
-            margin-left: 5px; /* 与数量框的间距 */
+            margin-left: 5px;
         }
         .cost-item .unit-label {
             margin-left: 5px;
-            flex: 0 0 30px; /* "元" 字样宽度 */
+            flex: 0 0 30px;
             text-align: left;
         }
         .total-cost-display {
@@ -131,7 +131,7 @@
             font-size: 1.2em;
         }
         .results .cost-display {
-            color: #dc3545; /* 成本显示为红色 */
+            color: #dc3545;
         }
         .disclaimer {
             font-size: 0.9em;
@@ -143,8 +143,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>PCDN 收益计算器</h1>
-        <p>输入您的 PCDN 带宽贡献数据、宽带与硬件配置，即可估算潜在收益和成本。</p>
+        <h1>带宽收益与成本计算器</h1>
+        <p>输入您的带宽贡献数据、宽带与硬件配置，即可估算潜在收益和成本。</p>
 
         <hr>
 
@@ -173,7 +173,7 @@
                     <option value="day">/天</option>
                 </select>
             </div>
-            <p style="font-size: 0.9em; color: #777;">根据 PCDN 平台公布的计费标准。</p>
+            <p style="font-size: 0.9em; color: #777;">根据平台公布的计费标准。</p>
         </div>
 
         <div class="input-group">
@@ -186,98 +186,98 @@
 
         <h2>宽带成本估算</h2>
         <div class="input-group">
-            <label for="broadbandSpeed">您宽带的下载速度:</label>
+            <label for="broadbandSpeed">您单条宽带的下载速度:</label>
             <input type="number" id="broadbandSpeed" placeholder="例如：100" step="1">
             <select id="broadbandSpeedUnit">
                 <option value="Mbps">Mbps</option>
                 <option value="Gbps">Gbps</option>
             </select>
-            <p style="font-size: 0.9em; color: #777;">您的宽带套餐实际速度。</p>
+            <p style="font-size: 0.9em; color: #777;">您单个宽带套餐的实际速度。</p>
         </div>
         <div class="input-group">
-            <label for="broadbandCost">您宽带的月租费 (元):</label>
+            <label for="broadbandCost">您单条宽带的月租费 (元):</label>
             <input type="number" id="broadbandCost" placeholder="例如：40" step="0.1">
-            <p style="font-size: 0.9em; color: #777;">您每月支付的宽带费用。</p>
+            <p style="font-size: 0.9em; color: #777;">您每月为单条宽带支付的费用。</p>
         </div>
         <div class="total-cost-display">
             预估月度宽带成本: <strong class="cost-display" id="estimatedBroadbandCost">0.00 元</strong>
-            <p style="font-size: 0.8em; color: #777; font-weight: normal;">(根据贡献带宽比例分摊)</p>
+            <p style="font-size: 0.8em; color: #777; font-weight: normal;">(根据贡献带宽和单条宽带速度分摊)</p>
         </div>
 
         <hr>
 
         <h2>一次性成本估算</h2>
-        <p style="font-size: 0.9em; color: #777; margin-bottom: 15px;">输入您拥有的硬件和宽带安装数量，并可修改其名称和单价。</p>
+        <p style="font-size: 0.9em; color: #777; margin-bottom: 15px;">输入您拥有的硬件信息，并可修改其名称和单价。宽带安装费将根据带宽自动估算。</p>
 
         <div class="cost-item">
-            <input type="text" id="broadbandInstallName" value="宽带安装费" oninput="updateCostItemName('broadbandInstall')">
-            <input type="number" id="broadbandInstallPriceInput" value="100" step="1" class="price-input">
-            <span class="unit-label">元 ×</span>
-            <input type="number" id="broadbandInstallQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
+            <input type="text" id="broadbandInstallName" value="单条宽带安装费" readonly style="border:none; background:none;">
+            <input type="number" id="broadbandInstallPriceInput" value="100" step="1" class="price-input" oninput="calculateOneTimeCost()">
+            <span class="unit-label">元 </span>
+            <span style="flex: 1; text-align: right; color: #777;">(数量根据贡献带宽和单条宽带速度自动估算)</span>
         </div>
         <div class="cost-item">
             <input type="text" id="switchName" value="交换机 (思科4948e)">
-            <input type="number" id="switchPriceInput" value="430" step="1" class="price-input">
+            <input type="number" id="switchPriceInput" value="430" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="switchQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
         <div class="cost-item">
             <input type="text" id="sasHddName" value="SAS 6T 硬盘">
-            <input type="number" id="sasHddPriceInput" value="279" step="1" class="price-input">
+            <input type="number" id="sasHddPriceInput" value="279" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="sasHddQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
         <div class="cost-item">
             <input type="text" id="ssdName" value="HK4R 2T 固态硬盘">
-            <input type="number" id="ssdPriceInput" value="539" step="1" class="price-input">
+            <input type="number" id="ssdPriceInput" value="539" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="ssdQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
         <div class="cost-item">
             <input type="text" id="motherboardName" value="主板 (RD452X)">
-            <input type="number" id="motherboardPriceInput" value="176" step="1" class="price-input">
+            <input type="number" id="motherboardPriceInput" value="176" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="motherboardQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
         <div class="cost-item">
             <input type="text" id="cpuName" value="CPU (E5 2683V3)">
-            <input type="number" id="cpuPriceInput" value="23" step="1" class="price-input">
+            <input type="number" id="cpuPriceInput" value="23" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="cpuQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
         <div class="cost-item">
             <input type="text" id="ramName" value="内存 (DDR4 16G)">
-            <input type="number" id="ramPriceInput" value="75" step="1" class="price-input">
+            <input type="number" id="ramPriceInput" value="75" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="ramQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
         <div class="cost-item">
             <input type="text" id="ethernetCableName" value="网线">
-            <input type="number" id="ethernetCablePriceInput" value="10" step="1" class="price-input">
+            <input type="number" id="ethernetCablePriceInput" value="10" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="ethernetCableQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
         <div class="cost-item">
             <input type="text" id="ocpNicName" value="OCP 网卡">
-            <input type="number" id="ocpNicPriceInput" value="13" step="1" class="price-input">
+            <input type="number" id="ocpNicPriceInput" value="13" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="ocpNicQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
         <div class="cost-item">
             <input type="text" id="caseName" value="机箱">
-            <input type="number" id="casePriceInput" value="50" step="1" class="price-input">
+            <input type="number" id="casePriceInput" value="50" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="caseQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
         <div class="cost-item">
             <input type="text" id="psuName" value="电源">
-            <input type="number" id="psuPriceInput" value="200" step="1" class="price-input">
+            <input type="number" id="psuPriceInput" value="200" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="psuQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
         <div class="cost-item">
             <input type="text" id="hddCageName" value="硬盘笼">
-            <input type="number" id="hddCagePriceInput" value="80" step="1" class="price-input">
+            <input type="number" id="hddCagePriceInput" value="80" step="1" class="price-input" oninput="calculateOneTimeCost()">
             <span class="unit-label">元 ×</span>
             <input type="number" id="hddCageQuantity" value="0" min="0" oninput="calculateOneTimeCost()">
         </div>
@@ -286,7 +286,7 @@
             总一次性投入成本: <strong class="cost-display" id="totalOneTimeCost">0.00 元</strong>
         </div>
 
-        <button onclick="calculatePCDNRevenueAndCost()">计算总览</button>
+        <button onclick="calculateRevenueAndCost()">计算总览</button>
 
         <hr>
 
@@ -296,74 +296,73 @@
             <p>年度预估收益: <strong><span id="finalAnnualRevenue">0.00 元</span></strong></p>
             <p>月度预估宽带成本: <strong class="cost-display"><span id="finalBroadbandCost">0.00 元</span></strong></p>
             <p>总一次性投入成本: <strong class="cost-display"><span id="finalOneTimeCost">0.00 元</span></strong></p>
-            <p style="font-size: 0.9em; color: #777;">（总一次性投入成本包括硬件和宽带安装费，未计入月度或年度净收益中）</p>
+            <p style="font-size: 0.9em; color: #777;">（总一次性投入成本包括硬件和根据带宽估算的宽带安装费，未计入月度或年度净收益中）</p>
         </div>
 
         <p class="disclaimer">
-            以上结果为估算值，实际收益和成本可能因 PCDN 平台策略、网络波动、资源利用率、硬件市场价格波动、宽带安装费用差异等因素有所差异。请以 PCDN 平台结算和实际采购价格为准。
+            以上结果为估算值，实际收益和成本可能因平台策略、网络波动、资源利用率、硬件市场价格波动、宽带安装费用差异等因素有所差异。请以实际结算和采购价格为准。
         </p>
     </div>
 
     <script>
-        // 初始化一次性成本项目的数组，包含名称、默认价格和对应的数量输入框ID
-        const ONE_TIME_COST_ITEMS = [
-            { id: 'broadbandInstall', name: '宽带安装费', defaultPrice: 100 },
-            { id: 'switch', name: '交换机 (思科4948e)', defaultPrice: 430 },
-            { id: 'sasHdd', name: 'SAS 6T 硬盘', defaultPrice: 279 },
-            { id: 'ssd', name: 'HK4R 2T 固态硬盘', defaultPrice: 539 },
-            { id: 'motherboard', name: '主板 (RD452X)', defaultPrice: 176 },
-            { id: 'cpu', name: 'CPU (E5 2683V3)', defaultPrice: 23 },
-            { id: 'ram', name: '内存 (DDR4 16G)', defaultPrice: 75 },
-            { id: 'ethernetCable', name: '网线', defaultPrice: 10 },
-            { id: 'ocpNic', name: 'OCP 网卡', defaultPrice: 13 },
-            { id: 'case', name: '机箱', defaultPrice: 50 },
-            { id: 'psu', name: '电源', defaultPrice: 200 },
-            { id: 'hddCage', name: '硬盘笼', defaultPrice: 80 }
+        // 定义可配置的成本项目，不包含宽带安装费的数量，因为那是计算出来的
+        const CONFIGURABLE_COST_ITEMS_EXCEPT_BROADBAND_INSTALL = [
+            { id: 'switch', defaultName: '交换机 (思科4948e)', defaultPrice: 430 },
+            { id: 'sasHdd', defaultName: 'SAS 6T 硬盘', defaultPrice: 279 },
+            { id: 'ssd', defaultName: 'HK4R 2T 固态硬盘', defaultPrice: 539 },
+            { id: 'motherboard', defaultName: '主板 (RD452X)', defaultPrice: 176 },
+            { id: 'cpu', defaultName: 'CPU (E5 2683V3)', defaultPrice: 23 },
+            { id: 'ram', defaultName: '内存 (DDR4 16G)', defaultPrice: 75 },
+            { id: 'ethernetCable', defaultName: '网线', defaultPrice: 10 },
+            { id: 'ocpNic', defaultName: 'OCP 网卡', defaultPrice: 13 },
+            { id: 'case', defaultName: '机箱', defaultPrice: 50 },
+            { id: 'psu', defaultName: '电源', defaultPrice: 200 },
+            { id: 'hddCage', defaultName: '硬盘笼', defaultPrice: 80 }
         ];
 
         // 页面加载时绑定事件和初始化显示
         document.addEventListener('DOMContentLoaded', (event) => {
-            ONE_TIME_COST_ITEMS.forEach(item => {
+            // 初始化其他硬件项目
+            CONFIGURABLE_COST_ITEMS_EXCEPT_BROADBAND_INSTALL.forEach(item => {
                 const nameInput = document.getElementById(`${item.id}Name`);
                 const priceInput = document.getElementById(`${item.id}PriceInput`);
                 const quantityInput = document.getElementById(`${item.id}Quantity`);
 
-                if (nameInput) nameInput.value = item.name;
+                if (nameInput) nameInput.value = item.defaultName;
                 if (priceInput) priceInput.value = item.defaultPrice;
                 if (quantityInput) quantityInput.addEventListener('input', calculateOneTimeCost);
-                if (priceInput) priceInput.addEventListener('input', calculateOneTimeCost); // 价格变化也重新计算
+                if (priceInput) priceInput.addEventListener('input', calculateOneTimeCost);
             });
 
-            // 宽带成本输入框也绑定事件，实时计算
-            document.getElementById('broadbandSpeed').addEventListener('input', calculateBroadbandCost);
-            document.getElementById('broadbandSpeedUnit').addEventListener('change', calculateBroadbandCost);
-            document.getElementById('broadbandCost').addEventListener('input', calculateBroadbandCost);
-            document.getElementById('bandwidth').addEventListener('input', calculateBroadbandCost); // 贡献带宽变化时，宽带成本也可能变化
-            document.getElementById('bandwidthUnit').addEventListener('change', calculateBroadbandCost);
+            // 初始化宽带安装费的名称和单价
+            const broadbandInstallNameInput = document.getElementById('broadbandInstallName');
+            const broadbandInstallPriceInput = document.getElementById('broadbandInstallPriceInput');
+            if (broadbandInstallNameInput) broadbandInstallNameInput.value = "单条宽带安装费";
+            if (broadbandInstallPriceInput) broadbandInstallPriceInput.value = 100; // 默认值
+            // 宽带安装费的单价变化也会影响总一次性成本
+            if (broadbandInstallPriceInput) broadbandInstallPriceInput.addEventListener('input', calculateOneTimeCost);
 
+
+            // 宽带成本和贡献带宽相关的输入框绑定事件，确保宽带成本和安装费的实时计算
+            document.getElementById('broadbandSpeed').addEventListener('input', updateBroadbandCostsAndInstallFee);
+            document.getElementById('broadbandSpeedUnit').addEventListener('change', updateBroadbandCostsAndInstallFee);
+            document.getElementById('broadbandCost').addEventListener('input', updateBroadbandCostsAndInstallFee);
+            document.getElementById('bandwidth').addEventListener('input', updateBroadbandCostsAndInstallFee);
+            document.getElementById('bandwidthUnit').addEventListener('change', updateBroadbandCostsAndInstallFee);
 
             // 页面加载时先计算一次初始成本
-            calculateOneTimeCost();
-            calculateBroadbandCost();
+            updateBroadbandCostsAndInstallFee(); // 先更新宽带相关的成本和安装费，因为它们影响一次性总成本
+            calculateOneTimeCost(); // 再计算总一次性成本
         });
 
-        // 独立计算一次性总成本的函数
-        function calculateOneTimeCost() {
-            let totalCost = 0;
-            ONE_TIME_COST_ITEMS.forEach(item => {
-                const priceInput = document.getElementById(`${item.id}PriceInput`);
-                const quantityInput = document.getElementById(`${item.id}Quantity`);
-
-                const price = parseFloat(priceInput.value) || 0;
-                const quantity = parseInt(quantityInput.value) || 0;
-                totalCost += price * quantity;
-            });
-            document.getElementById('totalOneTimeCost').innerText = totalCost.toFixed(2) + " 元";
-            return totalCost;
+        // 综合更新宽带相关的成本（月租费和安装费）
+        function updateBroadbandCostsAndInstallFee() {
+            calculateBroadbandMonthlyCost();
+            calculateOneTimeCost(); // 宽带安装费现在是包含在一次性总成本中的，所以每次宽带相关参数变动都需要重新计算一次性总成本
         }
 
-        // 独立计算宽带成本的函数
-        function calculateBroadbandCost() {
+        // 独立计算宽带月度成本的函数
+        function calculateBroadbandMonthlyCost() {
             const broadbandSpeed = parseFloat(document.getElementById('broadbandSpeed').value);
             const broadbandSpeedUnit = document.getElementById('broadbandSpeedUnit').value;
             const broadbandMonthlyCost = parseFloat(document.getElementById('broadbandCost').value);
@@ -386,25 +385,72 @@
             }
 
             let calculatedBroadbandCost = 0;
-            // 只有当宽带速度和月租费都大于0时才计算比例
-            if (actualBroadbandSpeedMbps > 0 && broadbandMonthlyCost > 0) {
-                // 计算 PCDN 贡献带宽占总宽带的比例，然后乘以总宽带月租费
-                // 如果贡献带宽超过了宽带速度，则认为占用了全部宽带成本
-                const usageRatio = Math.min(1, actualContributionBandwidthMbps / actualBroadbandSpeedMbps);
-                calculatedBroadbandCost = broadbandMonthlyCost * usageRatio;
-            } else if (broadbandMonthlyCost > 0 && actualBroadbandSpeedMbps <= 0 && actualContributionBandwidthMbps > 0) {
-                 // 宽带速度为0但有月租费和贡献带宽，视为全部成本
-                 calculatedBroadbandCost = broadbandMonthlyCost;
+            let numberOfBroadbandsNeeded = 0;
+
+            if (actualBroadbandSpeedMbps > 0 && actualContributionBandwidthMbps > 0) {
+                // 计算需要多少条宽带才能承载贡献带宽
+                numberOfBroadbandsNeeded = Math.ceil(actualContributionBandwidthMbps / actualBroadbandSpeedMbps);
+            } else if (actualContributionBandwidthMbps > 0) {
+                 // 如果单条宽带速度为0但有贡献带宽，则视为至少需要1条
+                numberOfBroadbandsNeeded = 1;
             }
 
+            // 月租费按需要的宽带数量倍增
+            calculatedBroadbandCost = broadbandMonthlyCost * numberOfBroadbandsNeeded;
 
             document.getElementById('estimatedBroadbandCost').innerText = calculatedBroadbandCost.toFixed(2) + " 元";
             return calculatedBroadbandCost;
         }
 
+        // 独立计算一次性总成本（包括硬件和根据带宽估算的宽带安装费）的函数
+        function calculateOneTimeCost() {
+            let totalCost = 0;
+
+            // 获取宽带安装费的单价
+            const broadbandInstallPrice = parseFloat(document.getElementById('broadbandInstallPriceInput').value) || 0;
+            // 获取贡献带宽和单条宽带速度
+            const broadbandSpeed = parseFloat(document.getElementById('broadbandSpeed').value);
+            const broadbandSpeedUnit = document.getElementById('broadbandSpeedUnit').value;
+            const contributionBandwidth = parseFloat(document.getElementById('bandwidth').value);
+            const contributionBandwidthUnit = document.getElementById('bandwidthUnit').value;
+
+            let actualBroadbandSpeedMbps = broadbandSpeed;
+            if (broadbandSpeedUnit === 'Gbps') {
+                actualBroadbandSpeedMbps = broadbandSpeed * 1024; // Gbps 转换为 Mbps
+            }
+
+            let actualContributionBandwidthMbps = contributionBandwidth;
+            if (contributionBandwidthUnit === 'Gbps') {
+                actualContributionBandwidthMbps = contributionBandwidth * 1024; // Gbps 转换为 Mbps
+            }
+
+            let estimatedBroadbandInstallQuantity = 0;
+            // 根据贡献带宽和单条宽带速度计算需要的宽带条数
+            if (actualBroadbandSpeedMbps > 0 && actualContributionBandwidthMbps > 0) {
+                estimatedBroadbandInstallQuantity = Math.ceil(actualContributionBandwidthMbps / actualBroadbandSpeedMbps);
+            } else if (actualContributionBandwidthMbps > 0) {
+                // 如果单条宽带速度为0但有贡献带宽，则至少算1条宽带的安装费
+                estimatedBroadbandInstallQuantity = 1;
+            }
+            totalCost += estimatedBroadbandInstallQuantity * broadbandInstallPrice;
+
+
+            // 计算其他硬件成本
+            CONFIGURABLE_COST_ITEMS_EXCEPT_BROADBAND_INSTALL.forEach(item => {
+                const priceInput = document.getElementById(`${item.id}PriceInput`);
+                const quantityInput = document.getElementById(`${item.id}Quantity`);
+
+                const price = parseFloat(priceInput.value) || 0;
+                const quantity = parseInt(quantityInput.value) || 0;
+                totalCost += price * quantity;
+            });
+
+            document.getElementById('totalOneTimeCost').innerText = totalCost.toFixed(2) + " 元";
+            return totalCost;
+        }
 
         // 综合计算收益和成本的函数
-        function calculatePCDNRevenueAndCost() {
+        function calculateRevenueAndCost() {
             // --- 收益计算部分 ---
             const bandwidth = parseFloat(document.getElementById('bandwidth').value);
             const bandwidthUnit = document.getElementById('bandwidthUnit').value; // 'Mbps' or 'Gbps'
@@ -440,7 +486,7 @@
 
             // --- 成本计算部分 ---
             const totalOneTimeCost = calculateOneTimeCost(); // 调用一次性成本计算函数（包括硬件和宽带安装费）
-            const monthlyBroadbandCost = calculateBroadbandCost(); // 调用宽带成本计算函数
+            const monthlyBroadbandCost = calculateBroadbandMonthlyCost(); // 调用宽带月度成本计算函数
 
             // --- 更新页面显示 ---
             document.getElementById('finalMonthlyRevenue').innerText = estimatedMonthlyRevenue.toFixed(2) + " 元";
