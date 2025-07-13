@@ -12,7 +12,7 @@
             color: #333;
         }
         .container {
-            max-width: 750px;
+            max-width: 650px; /* 调整容器宽度以适应更精简的布局 */
             margin: 0 auto;
             background-color: #fff;
             padding: 30px;
@@ -49,81 +49,9 @@
             width: calc(50% - 10px);
         }
         .input-group .select-group {
-            width: calc(50% - 5px); /* Adjusted width to avoid overflow */
+            width: calc(50% - 5px);
             display: inline-block;
             vertical-align: middle;
-        }
-        /* 硬件成本估算部分的样式 */
-        .hardware-cost-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            padding-left: 10px; /* 缩进一些，与标题对齐 */
-        }
-        .hardware-cost-item input[type="text"].spec-input {
-            flex: 2; /* 描述部分占据更多空间 */
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            margin-right: 10px;
-        }
-        .hardware-cost-item input[type="number"].price-input {
-            width: 80px; /* 价格输入框固定宽度 */
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            text-align: right;
-        }
-        .hardware-cost-item .unit-label {
-            margin: 0 5px;
-        }
-        .hardware-cost-item input[type="number"].quantity-input {
-            width: 60px; /* 数量输入框固定宽度 */
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            text-align: center;
-            margin-left: 5px;
-        }
-        .hardware-cost-item .info-text {
-            font-size: 0.9em;
-            color: #777;
-            margin-left: 10px;
-            flex: 1; /* 占据剩余空间 */
-        }
-
-        .total-cost-display {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px dashed #eee;
-            font-size: 1.1em;
-            font-weight: bold;
-            text-align: right;
-        }
-        .total-hardware-cost {
-            font-size: 1.2em;
-            color: #dc3545;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px dashed #eee;
-            text-align: right;
-            font-weight: bold;
-        }
-        .fixed-cost-section {
-            background-color: #f9f9f9;
-            border: 1px solid #eee;
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 20px;
-        }
-        .fixed-cost-section h3 {
-            text-align: center;
-            color: #0056b3;
-            margin-top: 0;
-            margin-bottom: 15px;
         }
 
         button {
@@ -178,115 +106,7 @@
 <body>
     <div class="container">
         <h1>带宽收益与成本计算器</h1>
-        <p>输入您的带宽贡献数据、宽带与硬件配置，即可估算潜在收益和成本。</p>
-
-        <hr>
-
-        <h2>一次性核心硬件成本估算</h2>
-        <p style="font-size: 0.9em; color: #777; margin-bottom: 15px; text-align: center;">
-            在此填写您作为核心计算单元的硬件规格、单价和数量。
-        </p>
-
-        <div class="hardware-cost-item">
-            <input type="text" id="cpuSpec" value="CPU (例如：E5 2683V3 16核)" class="spec-input">
-            <input type="number" id="cpuPrice" value="23" step="1" class="price-input" oninput="calculateCoreHardwareCost()">
-            <span class="unit-label">元 ×</span>
-            <input type="number" id="cpuQuantity" value="1" min="0" class="quantity-input" oninput="calculateCoreHardwareCost()">
-            <span class="info-text"></span>
-        </div>
-        <div class="hardware-cost-item">
-            <input type="text" id="ramSpec" value="内存 (例如：DDR4 16G)" class="spec-input">
-            <input type="number" id="ramPrice" value="75" step="1" class="price-input" oninput="calculateCoreHardwareCost()">
-            <span class="unit-label">元 ×</span>
-            <input type="number" id="ramQuantity" value="1" min="0" class="quantity-input" oninput="calculateCoreHardwareCost()">
-            <span class="info-text"></span>
-        </div>
-        <div class="hardware-cost-item">
-            <input type="text" id="ssdSpec" value="SSD (例如：HK4R 2T 固态硬盘)" class="spec-input">
-            <input type="number" id="ssdPrice" value="539" step="1" class="price-input" oninput="calculateCoreHardwareCost()">
-            <span class="unit-label">元 ×</span>
-            <input type="number" id="ssdQuantity" value="1" min="0" class="quantity-input" oninput="calculateCoreHardwareCost()">
-            <span class="info-text"></span>
-        </div>
-        <div class="hardware-cost-item">
-            <input type="text" id="hddSpec" value="HDD (例如：SAS 6T 硬盘)" class="spec-input">
-            <input type="number" id="hddPrice" value="279" step="1" class="price-input" oninput="calculateCoreHardwareCost()">
-            <span class="unit-label">元 ×</span>
-            <input type="number" id="hddQuantity" value="2" min="0" class="quantity-input" oninput="calculateCoreHardwareCost()">
-            <span class="info-text"></span>
-        </div>
-        
-        <div class="total-hardware-cost">
-            核心硬件投入: <strong class="cost-display" id="totalCoreHardwareCostDisplay">0.00 元</strong>
-        </div>
-
-        <hr>
-
-        <h2>固定一次性投入</h2>
-        <p style="font-size: 0.9em; color: #777; margin-bottom: 15px; text-align: center;">
-            这些是无论核心配置如何，都需要一次性支付的基础设施成本。
-        </p>
-        <div class="fixed-cost-section">
-            <div class="hardware-cost-item">
-                <input type="text" id="broadbandInstallSpec" value="单条宽带安装费" class="spec-input" readonly>
-                <input type="number" id="broadbandInstallPrice" value="100" step="1" class="price-input" oninput="calculateFixedOneTimeCost()">
-                <span class="unit-label">元 ×</span>
-                <input type="number" id="broadbandInstallQuantity" value="1" min="0" class="quantity-input" readonly style="background-color: #f0f0f0;">
-                <span class="info-text">(数量根据贡献带宽和单条宽带速度自动估算)</span>
-            </div>
-            <div class="hardware-cost-item">
-                <input type="text" id="caseSpec" value="机箱 (例如：2U)" class="spec-input">
-                <input type="number" id="casePrice" value="50" step="1" class="price-input" oninput="calculateFixedOneTimeCost()">
-                <span class="unit-label">元 ×</span>
-                <input type="number" id="caseQuantity" value="1" min="0" class="quantity-input" oninput="calculateFixedOneTimeCost()">
-                <span class="info-text"></span>
-            </div>
-            <div class="hardware-cost-item">
-                <input type="text" id="nicSpec" value="网卡 (例如：万兆 OCP 网卡)" class="spec-input">
-                <input type="number" id="nicPrice" value="13" step="1" class="price-input" oninput="calculateFixedOneTimeCost()">
-                <span class="unit-label">元 ×</span>
-                <input type="number" id="nicQuantity" value="1" min="0" class="quantity-input" oninput="calculateFixedOneTimeCost()">
-                <span class="info-text"></span>
-            </div>
-            <div class="hardware-cost-item">
-                <input type="text" id="motherboardSpec" value="主板 (例如：RD452X)" class="spec-input">
-                <input type="number" id="motherboardPrice" value="176" step="1" class="price-input" oninput="calculateFixedOneTimeCost()">
-                <span class="unit-label">元 ×</span>
-                <input type="number" id="motherboardQuantity" value="1" min="0" class="quantity-input" oninput="calculateFixedOneTimeCost()">
-                <span class="info-text"></span>
-            </div>
-            <div class="hardware-cost-item">
-                <input type="text" id="psuSpec" value="电源 (例如：500W)" class="spec-input">
-                <input type="number" id="psuPrice" value="200" step="1" class="price-input" oninput="calculateFixedOneTimeCost()">
-                <span class="unit-label">元 ×</span>
-                <input type="number" id="psuQuantity" value="1" min="0" class="quantity-input" oninput="calculateFixedOneTimeCost()">
-                <span class="info-text"></span>
-            </div>
-            <div class="hardware-cost-item">
-                <input type="text" id="switchSpec" value="交换机 (例如：思科4948e)" class="spec-input">
-                <input type="number" id="switchPrice" value="430" step="1" class="price-input" oninput="calculateFixedOneTimeCost()">
-                <span class="unit-label">元 ×</span>
-                <input type="number" id="switchQuantity" value="0" min="0" class="quantity-input" oninput="calculateFixedOneTimeCost()">
-                <span class="info-text"></span>
-            </div>
-            <div class="hardware-cost-item">
-                <input type="text" id="ethernetCableSpec" value="网线" class="spec-input">
-                <input type="number" id="ethernetCablePrice" value="10" step="1" class="price-input" oninput="calculateFixedOneTimeCost()">
-                <span class="unit-label">元 ×</span>
-                <input type="number" id="ethernetCableQuantity" value="5" min="0" class="quantity-input" oninput="calculateFixedOneTimeCost()">
-                <span class="info-text"></span>
-            </div>
-            <div class="hardware-cost-item">
-                <input type="text" id="hddCageSpec" value="硬盘笼" class="spec-input">
-                <input type="number" id="hddCagePrice" value="80" step="1" class="price-input" oninput="calculateFixedOneTimeCost()">
-                <span class="unit-label">元 ×</span>
-                <input type="number" id="hddCageQuantity" value="0" min="0" class="quantity-input" oninput="calculateFixedOneTimeCost()">
-                <span class="info-text"></span>
-            </div>
-            <div class="total-hardware-cost">
-                固定一次性投入: <strong class="cost-display" id="totalFixedOneTimeCostDisplay">0.00 元</strong>
-            </div>
-        </div>
+        <p>输入您的带宽贡献数据和宽带信息，即可估算潜在收益和成本。</p>
 
         <hr>
 
@@ -332,8 +152,8 @@
         <h2>宽带成本估算</h2>
         <div class="input-group">
             <label for="broadbandSpeed">您单条宽带的下载速度:</label>
-            <input type="number" id="broadbandSpeed" placeholder="例如：100" step="1">
-            <select id="broadbandSpeedUnit">
+            <input type="number" id="broadbandSpeed" placeholder="例如：100" step="1" oninput="updateBroadbandCostsAndInstallFee()">
+            <select id="broadbandSpeedUnit" onchange="updateBroadbandCostsAndInstallFee()">
                 <option value="Mbps">Mbps</option>
                 <option value="Gbps">Gbps</option>
             </select>
@@ -341,7 +161,7 @@
         </div>
         <div class="input-group">
             <label for="broadbandCost">您单条宽带的月租费 (元):</label>
-            <input type="number" id="broadbandCost" placeholder="例如：40" step="0.1">
+            <input type="number" id="broadbandCost" placeholder="例如：40" step="0.1" oninput="updateBroadbandCostsAndInstallFee()">
             <p style="font-size: 0.9em; color: #777;">您每月为单条宽带支付的费用。</p>
         </div>
         <div class="total-cost-display">
@@ -362,7 +182,7 @@
             <p>年度预估收益: <strong><span id="finalAnnualRevenue">0.00 元</span></strong></p>
             <p>月度预估宽带成本: <strong class="cost-display"><span id="finalBroadbandCost">0.00 元</span></strong></p>
             <p>总一次性投入: <strong class="cost-display"><span id="finalTotalOneTimeCost">0.00 元</span></strong></p>
-            <p style="font-size: 0.9em; color: #777;">（总一次性投入包括核心硬件和固定基础设施成本，未计入月度或年度净收益中）</p>
+            <p style="font-size: 0.9em; color: #777;">（总一次性投入由推荐配置自动计算，未计入月度或年度净收益中）</p>
             <div id="overallLimitWarning" class="warning-message" style="display:none;">
                 <p><strong>警告：</strong>您当前的配置可能超出单台机器的理论最大承载能力！</p>
                 <ul style="text-align: left; margin-left: 20px;">
@@ -382,70 +202,34 @@
         // 定义单台机器的配置上限
         const MAX_BANDWIDTH_GBPS = 6; // 最大带宽 6Gbps
         const MAX_DRIVE_SLOTS = 12;   // 最大盘位 12个
-        const HDD_CAPACITY_PER_SLOT_TB = 6; // 机械硬盘每个盘位 6TB
-        const SSD_CAPACITY_PER_SLOT_TB = 2; // 固态硬盘每个盘位 2TB (根据用户提供的信息，固态硬盘容量虽然小，但仍占一个盘位)
+        // 注意：这里没有为每个盘位定义具体的硬盘容量，因为推荐配置是根据总盘位和用户提供的带宽、宽带速度来计算的。
+        // 如果要根据容量来推算盘位数量，会复杂很多，目前是简单地基于“推荐配置”中的SSD/HDD数量来计算盘位。
 
-        // 定义核心硬件项目及其默认值
-        const CORE_HARDWARE_ITEMS = [
-            { id: 'cpu', spec: 'CPU (例如：E5 2683V3 16核)', defaultPrice: 23, defaultQuantity: 1 },
-            { id: 'ram', spec: '内存 (例如：DDR4 16G)', defaultPrice: 75, defaultQuantity: 1 },
-            { id: 'ssd', spec: 'SSD (例如：HK4R 2T 固态硬盘)', defaultPrice: 539, defaultQuantity: 1 },
-            { id: 'hdd', spec: 'HDD (例如：SAS 6T 硬盘)', defaultPrice: 279, defaultQuantity: 2 } // 默认2块6T硬盘，表示12T存储
-        ];
-
-        // 定义固定一次性投入项目及其默认值
-        const FIXED_ONE_TIME_ITEMS = [
-            { id: 'broadbandInstall', spec: '单条宽带安装费', defaultPrice: 100, defaultQuantity: 1, isQuantityCalculated: true },
-            { id: 'case', spec: '机箱 (例如：2U)', defaultPrice: 50, defaultQuantity: 1 },
-            { id: 'nic', spec: '网卡 (例如：万兆 OCP 网卡)', defaultPrice: 13, defaultQuantity: 1 },
-            { id: 'motherboard', spec: '主板 (例如：RD452X)', defaultPrice: 176, defaultQuantity: 1 },
-            { id: 'psu', spec: '电源 (例如：500W)', defaultPrice: 200, defaultQuantity: 1 },
-            { id: 'switch', spec: '交换机 (例如：思科4948e)', defaultPrice: 430, defaultQuantity: 0 },
-            { id: 'ethernetCable', spec: '网线', defaultPrice: 10, defaultQuantity: 5 },
-            { id: 'hddCage', spec: '硬盘笼', defaultPrice: 80, defaultQuantity: 0 }
+        // 定义推荐配置的硬件及其默认价格和数量
+        // 这些值是固定的，不再由用户输入
+        const RECOMMENDED_HARDWARE_COSTS = [
+            // 核心硬件 (推荐配置的主要部分，但其数量已根据最大盘位预设)
+            { name: 'CPU (E5 2683V3 16核)', price: 23, quantity: 1 },
+            { name: '内存 (DDR4 16G)', price: 75, quantity: 1 },
+            // SSD和HDD的数量将由validateConfigLimits()中的逻辑来决定，默认给出示例数量
+            { name: 'SSD (2T 固态硬盘)', price: 539, quantity: 1 },
+            { name: 'HDD (6T 机械硬盘)', price: 2, price: 279, quantity: 2 }, // 默认2块6T机械硬盘，共4个盘位
+                                                                          // 注意：SSD和HDD数量总和应<=MAX_DRIVE_SLOTS
+            // 固定一次性投入
+            { name: '机箱 (2U)', price: 50, quantity: 1 },
+            { name: '网卡 (万兆 OCP 网卡)', price: 13, quantity: 1 },
+            { name: '主板 (RD452X)', price: 176, quantity: 1 },
+            { name: '电源 (500W)', price: 200, quantity: 1 },
+            { name: '交换机 (思科4948e)', price: 430, quantity: 0 },
+            { name: '网线', price: 10, quantity: 5 },
+            { name: '硬盘笼', price: 80, quantity: 0 },
+            // 宽带安装费特殊处理，数量由带宽估算
+            { name: '单条宽带安装费', price: 100, quantity: 0, isBroadbandInstallFee: true }
         ];
 
         // 页面加载时绑定事件和初始化显示
         document.addEventListener('DOMContentLoaded', (event) => {
-            // 初始化核心硬件项目的默认值并绑定事件
-            CORE_HARDWARE_ITEMS.forEach(item => {
-                const specInput = document.getElementById(`${item.id}Spec`);
-                const priceInput = document.getElementById(`${item.id}Price`);
-                const quantityInput = document.getElementById(`${item.id}Quantity`);
-
-                if (specInput) specInput.value = item.spec;
-                if (priceInput) priceInput.value = item.defaultPrice;
-                if (quantityInput) quantityInput.value = item.defaultQuantity;
-
-                if (specInput) specInput.addEventListener('input', () => { calculateCoreHardwareCost(); validateConfigLimits(); });
-                if (priceInput) priceInput.addEventListener('input', () => { calculateCoreHardwareCost(); validateConfigLimits(); });
-                if (quantityInput) quantityInput.addEventListener('input', () => { calculateCoreHardwareCost(); validateConfigLimits(); });
-            });
-
-            // 初始化固定一次性投入项目的默认值并绑定事件
-            FIXED_ONE_TIME_ITEMS.forEach(item => {
-                const specInput = document.getElementById(`${item.id}Spec`);
-                const priceInput = document.getElementById(`${item.id}Price`);
-                const quantityInput = document.getElementById(`${item.id}Quantity`);
-
-                if (specInput) specInput.value = item.spec;
-                if (priceInput) priceInput.value = item.defaultPrice;
-                if (quantityInput) {
-                    quantityInput.value = item.defaultQuantity;
-                    if (item.isQuantityCalculated) {
-                        quantityInput.readOnly = true; // 宽带安装费数量只读
-                        quantityInput.style.backgroundColor = '#f0f0f0'; // 灰色背景
-                    }
-                }
-
-                if (specInput) specInput.addEventListener('input', calculateFixedOneTimeCost);
-                if (priceInput) priceInput.addEventListener('input', calculateFixedOneTimeCost);
-                if (quantityInput && !item.isQuantityCalculated) {
-                    quantityInput.addEventListener('input', calculateFixedOneTimeCost);
-                }
-            });
-
-            // 宽带成本和贡献带宽相关的输入框绑定事件，确保宽带成本、安装费和所需条数的实时计算和限制验证
+            // 宽带成本和贡献带宽相关的输入框绑定事件
             document.getElementById('broadbandSpeed').addEventListener('input', updateBroadbandCostsAndInstallFee);
             document.getElementById('broadbandSpeedUnit').addEventListener('change', updateBroadbandCostsAndInstallFee);
             document.getElementById('broadbandCost').addEventListener('input', updateBroadbandCostsAndInstallFee);
@@ -454,8 +238,6 @@
 
             // 页面加载时先计算一次初始成本和验证
             updateBroadbandCostsAndInstallFee(); // 先更新宽带相关的成本和安装费数量
-            calculateCoreHardwareCost(); // 计算核心硬件成本
-            calculateFixedOneTimeCost(); // 计算固定一次性投入
             validateConfigLimits(); // 初始验证配置限制
         });
 
@@ -489,14 +271,14 @@
             document.getElementById('broadbandQuantityNeeded').innerText = numberOfBroadbandsNeeded;
             document.getElementById('displayContributionBandwidth').innerText = `${contributionBandwidth || 0} ${contributionBandwidthUnit}`;
 
-            // 更新宽带安装费的实际数量输入框
-            const broadbandInstallQuantityInput = document.getElementById('broadbandInstallQuantity');
-            if (broadbandInstallQuantityInput) {
-                broadbandInstallQuantityInput.value = numberOfBroadbandsNeeded;
+            // 更新 RECOMMENDED_HARDWARE_COSTS 中宽带安装费的数量
+            const broadbandInstallItem = RECOMMENDED_HARDWARE_COSTS.find(item => item.isBroadbandInstallFee);
+            if (broadbandInstallItem) {
+                broadbandInstallItem.quantity = numberOfBroadbandsNeeded;
             }
-
-            calculateFixedOneTimeCost(); // 数量变化后重新计算固定一次性成本
-            validateConfigLimits(); // 带宽和宽带数量变化时也验证限制
+            
+            // 每次更新宽带相关信息后，重新验证配置上限
+            validateConfigLimits();
         }
 
         // 独立计算宽带月度成本的函数
@@ -526,47 +308,23 @@
             let numberOfBroadbandsNeeded = 0;
 
             if (actualBroadbandSpeedMbps > 0 && actualContributionBandwidthMbps > 0) {
-                // 计算需要多少条宽带才能承载贡献带宽
                 numberOfBroadbandsNeeded = Math.ceil(actualContributionBandwidthMbps / actualBroadbandSpeedMbps);
             } else if (actualContributionBandwidthMbps > 0) {
-                 // 如果单条宽带速度为0但有贡献带宽，则视为至少需要1条
-                numberOfBroadbandsNeeded = 1;
+                 numberOfBroadbandsNeeded = 1;
             }
 
-            // 月租费按需要的宽带数量倍增
             calculatedBroadbandCost = broadbandMonthlyCost * numberOfBroadbandsNeeded;
 
             document.getElementById('estimatedBroadbandCost').innerText = calculatedBroadbandCost.toFixed(2) + " 元";
             return calculatedBroadbandCost;
         }
 
-        // 计算核心硬件成本
-        function calculateCoreHardwareCost() {
+        // 计算所有一次性投入（基于推荐配置）
+        function calculateTotalOneTimeHardwareCost() {
             let totalCost = 0;
-            CORE_HARDWARE_ITEMS.forEach(item => {
-                const priceInput = document.getElementById(`${item.id}Price`);
-                const quantityInput = document.getElementById(`${item.id}Quantity`);
-
-                const price = parseFloat(priceInput.value) || 0;
-                const quantity = parseInt(quantityInput.value) || 0;
-                totalCost += price * quantity;
+            RECOMMENDED_HARDWARE_COSTS.forEach(item => {
+                totalCost += item.price * item.quantity;
             });
-            document.getElementById('totalCoreHardwareCostDisplay').innerText = totalCost.toFixed(2) + " 元";
-            return totalCost;
-        }
-
-        // 计算固定一次性投入
-        function calculateFixedOneTimeCost() {
-            let totalCost = 0;
-            FIXED_ONE_TIME_ITEMS.forEach(item => {
-                const priceInput = document.getElementById(`${item.id}Price`);
-                const quantityInput = document.getElementById(`${item.id}Quantity`);
-
-                const price = parseFloat(priceInput.value) || 0;
-                const quantity = parseInt(quantityInput.value) || 0;
-                totalCost += price * quantity;
-            });
-            document.getElementById('totalFixedOneTimeCostDisplay').innerText = totalCost.toFixed(2) + " 元";
             return totalCost;
         }
 
@@ -587,8 +345,13 @@
             }
 
             // 2. 验证硬盘盘位
-            const ssdQuantity = parseInt(document.getElementById('ssdQuantity').value) || 0;
-            const hddQuantity = parseInt(document.getElementById('hddQuantity').value) || 0;
+            // 在新方案中，SSD和HDD的数量是RECOMMENDED_HARDWARE_COSTS中预设的，不是用户输入的
+            const ssdItem = RECOMMENDED_HARDWARE_COSTS.find(item => item.name.includes('SSD'));
+            const hddItem = RECOMMENDED_HARDWARE_COSTS.find(item => item.name.includes('HDD'));
+            
+            const ssdQuantity = ssdItem ? ssdItem.quantity : 0;
+            const hddQuantity = hddItem ? hddItem.quantity : 0;
+            
             const totalDriveSlots = ssdQuantity + hddQuantity;
 
             if (totalDriveSlots > MAX_DRIVE_SLOTS) {
@@ -656,16 +419,14 @@
             const estimatedMonthlyRevenue = actualBandwidthMbps * actualPricePerMbpsPerMonth * onlineRatio;
 
             // --- 成本计算部分 ---
-            const totalCoreHardwareCost = calculateCoreHardwareCost();
-            const totalFixedOneTimeCost = calculateFixedOneTimeCost();
-            const totalOverallOneTimeCost = totalCoreHardwareCost + totalFixedOneTimeCost; // 总的一次性投入
+            const totalOneTimeOverallCost = calculateTotalOneTimeHardwareCost(); // 调用新的总一次性投入计算函数
             const monthlyBroadbandCost = calculateBroadbandMonthlyCost(); // 调用宽带月度成本计算函数
 
             // --- 更新页面显示 ---
             document.getElementById('finalMonthlyRevenue').innerText = estimatedMonthlyRevenue.toFixed(2) + " 元";
             document.getElementById('finalAnnualRevenue').innerText = (estimatedMonthlyRevenue * 12).toFixed(2) + " 元";
             document.getElementById('finalBroadbandCost').innerText = monthlyBroadbandCost.toFixed(2) + " 元";
-            document.getElementById('finalTotalOneTimeCost').innerText = totalOverallOneTimeCost.toFixed(2) + " 元";
+            document.getElementById('finalTotalOneTimeCost').innerText = totalOneTimeOverallCost.toFixed(2) + " 元";
         }
     </script>
 </body>
