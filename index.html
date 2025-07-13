@@ -12,7 +12,7 @@
             color: #333;
         }
         .container {
-            max-width: 650px; /* 调整容器宽度 */
+            max-width: 750px; /* 调整容器宽度以适应可编辑项 */
             margin: 0 auto;
             background-color: #fff;
             padding: 30px;
@@ -53,38 +53,59 @@
             display: inline-block;
             vertical-align: middle;
         }
-        /* 推荐配置部分的样式 */
-        .recommended-config-section {
+        /* 可编辑推荐配置部分的样式 */
+        .editable-recommended-config-section {
             background-color: #f9f9f9;
             border: 1px solid #eee;
             padding: 15px;
             border-radius: 6px;
             margin-top: 20px;
         }
-        .recommended-config-section h3 {
+        .editable-recommended-config-section h3 {
             text-align: center;
             color: #0056b3;
             margin-top: 0;
             margin-bottom: 15px;
         }
-        .config-item {
+        .hardware-cost-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
-            padding: 5px 10px;
-            background-color: #fff;
+            padding-left: 10px;
+        }
+        .hardware-cost-item input[type="text"].spec-input {
+            flex: 2; /* 描述部分占据更多空间 */
+            padding: 8px;
+            border: 1px solid #ccc;
             border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+            margin-right: 10px;
         }
-        .config-item .label {
-            font-weight: bold;
-            flex-basis: 30%; /* 左侧标签占据一定宽度 */
+        .hardware-cost-item input[type="number"].price-input {
+            width: 80px; /* 价格输入框固定宽度 */
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: right;
         }
-        .config-item .value {
-            flex-basis: 68%; /* 右侧值占据剩余宽度 */
-            text-align: left;
-            word-wrap: break-word; /* 确保长文本换行 */
+        .hardware-cost-item .unit-label {
+            margin: 0 5px;
+        }
+        .hardware-cost-item input[type="number"].quantity-input {
+            width: 60px; /* 数量输入框固定宽度 */
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-left: 5px;
+        }
+        .hardware-cost-item .info-text {
+            font-size: 0.9em;
+            color: #777;
+            margin-left: 10px;
+            flex: 1; /* 占据剩余空间 */
         }
         .total-cost-display {
             margin-top: 15px;
@@ -160,72 +181,36 @@
 
         <hr>
 
-        <h2>推荐配置</h2>
+        <h2>推荐配置（可编辑）</h2>
         <p style="font-size: 0.9em; color: #777; margin-bottom: 15px; text-align: center;">
-            以下是我们推荐的单台机器配置标准：
+            请根据您的实际需求修改以下推荐配置的型号、单价和数量：
         </p>
-        <div class="recommended-config-section">
-            <div class="config-item">
-                <span class="label">宽带:</span>
-                <span class="value">1Gbps~2Gbps</span>
+        <div class="editable-recommended-config-section">
+            <div class="hardware-cost-item">
+                <input type="text" id="ssdSpec" value="SSD (例如：HK4R 2T 固态硬盘)" class="spec-input">
+                <input type="number" id="ssdPrice" value="539" step="1" class="price-input" oninput="calculateEditableRecommendedCost()">
+                <span class="unit-label">元 ×</span>
+                <input type="number" id="ssdQuantity" value="1" min="0" class="quantity-input" oninput="calculateEditableRecommendedCost(); validateConfigLimits()">
+                <span class="info-text"></span>
             </div>
-            <div class="config-item">
-                <span class="label">网络:</span>
-                <span class="value">IPV4公网或NAT1 IPv6公网</span>
+            <div class="hardware-cost-item">
+                <input type="text" id="hddSpec" value="HDD (例如：SAS 6T 硬盘)" class="spec-input">
+                <input type="number" id="hddPrice" value="279" step="1" class="price-input" oninput="calculateEditableRecommendedCost()">
+                <span class="unit-label">元 ×</span>
+                <input type="number" id="hddQuantity" value="2" min="0" class="quantity-input" oninput="calculateEditableRecommendedCost(); validateConfigLimits()">
+                <span class="info-text"></span>
             </div>
-            <div class="config-item">
-                <span class="label">端口:</span>
-                <span class="value">不限制</span>
+            <div class="hardware-cost-item">
+                <input type="text" id="ramSpec" value="内存 (例如：DDR4 16G)" class="spec-input">
+                <input type="number" id="ramPrice" value="75" step="1" class="price-input" oninput="calculateEditableRecommendedCost()">
+                <span class="unit-label">元 ×</span>
+                <input type="number" id="ramQuantity" value="1" min="0" class="quantity-input" oninput="calculateEditableRecommendedCost()">
+                <span class="info-text"></span>
             </div>
-            <div class="config-item">
-                <span class="label">网卡:</span>
-                <span class="value">万兆 (例如：万兆 OCP 网卡)</span>
+            
+            <div class="total-hardware-cost">
+                推荐配置硬件投入: <strong class="cost-display" id="totalEditableRecommendedCostDisplay">0.00 元</strong>
             </div>
-            <div class="config-item">
-                <span class="label">内存:</span>
-                <span class="value">16G (例如：DDR4 16G)</span>
-            </div>
-            <div class="config-item">
-                <span class="label">硬盘:</span>
-                <span class="value">SSD：1.5T / HDD: 12T (或1:3 SSD)</span>
-            </div>
-            <div class="config-item">
-                <span class="label">IO:</span>
-                <span class="value">系统盘iops>600SSD, 单盘ops>60HDD, 单盘iops≥70</span>
-            </div>
-            <div class="config-item">
-                <span class="label">机箱:</span>
-                <span class="value">2U</span>
-            </div>
-            <div class="config-item">
-                <span class="label">主板:</span>
-                <span class="value">例如：RD452X</span>
-            </div>
-            <div class="config-item">
-                <span class="label">电源:</span>
-                <span class="value">500W</span>
-            </div>
-            <div class="config-item">
-                <span class="label">交换机:</span>
-                <span class="value">例如：思科4948e (根据需求配置)</span>
-            </div>
-            <div class="config-item">
-                <span class="label">网线:</span>
-                <span class="value">少量</span>
-            </div>
-            <div class="config-item">
-                <span class="label">硬盘笼:</span>
-                <span class="value">根据盘位需求配置</span>
-            </div>
-            <div class="config-item">
-                <span class="label">宽带安装费:</span>
-                <span class="value">按条数计算</span>
-            </div>
-        </div>
-
-        <div class="total-hardware-cost">
-            此推荐配置估算的一次性总投入: <strong class="cost-display" id="totalOneTimeCostDisplay">0.00 元</strong>
-            <p style="font-size: 0.8em; color: #777; font-weight: normal;">(此费用由推荐配置的内部价格估算)</p>
         </div>
 
         <hr>
@@ -302,13 +287,12 @@
             <p>年度预估收益: <strong><span id="finalAnnualRevenue">0.00 元</span></strong></p>
             <p>月度预估宽带成本: <strong class="cost-display"><span id="finalBroadbandCost">0.00 元</span></strong></p>
             <p>总一次性投入: <strong class="cost-display"><span id="finalTotalOneTimeCost">0.00 元</span></strong></p>
-            <p style="font-size: 0.9em; color: #777;">（总一次性投入由推荐配置的内部价格估算，未计入月度或年度净收益中）</p>
+            <p style="font-size: 0.9em; color: #777;">（总一次性投入由推荐配置和后台固定投入估算）</p>
             <div id="overallLimitWarning" class="warning-message" style="display:none;">
                 <p><strong>警告：</strong>您当前的配置可能超出单台机器的理论最大承载能力！</p>
                 <ul style="text-align: left; margin-left: 20px;">
                     <li id="overallBandwidthWarning" style="display:none;">带宽超出 6Gbps 限制。</li>
-                    <li id="overallDriveSlotsWarning" style="display:none;">硬盘盘位超出 12 个限制。（根据推荐配置估算）</li>
-                    <li id="overallCpuCoreWarning" style="display:none;">CPU 核心数超出 28 核心 56 线程限制。（根据推荐配置估算）</li>
+                    <li id="overallDriveSlotsWarning" style="display:none;">硬盘盘位超出 12 个限制。（根据您设置的硬盘数量估算）</li>
                 </ul>
                 <p style="font-size: 0.8em; margin-top: 5px;">请考虑降低配置，或使用多台机器来满足需求。</p>
             </div>
@@ -323,31 +307,46 @@
         // 定义单台机器的配置上限
         const MAX_BANDWIDTH_GBPS = 6;     // 最大带宽 6Gbps
         const MAX_DRIVE_SLOTS = 12;       // 最大盘位 12个
-        const MAX_CPU_CORES = 28;         // 最大 CPU 核心数 28
-        const MAX_CPU_THREADS = 56;       // 最大 CPU 线程数 56 (假设 1 核心 = 2 线程，所以 28 核心 = 56 线程)
 
-        // 定义推荐配置的硬件及其默认价格和数量（用于内部计算，不对用户显示）
-        const RECOMMENDED_CONFIG_PRICES_QUANTITIES = [
-            // 核心硬件 (根据推荐配置进行估价)
-            { name: 'CPU', price: 23, quantity: 1, spec: '16核', cores: 16, threads: 32 }, // 示例价格和数量，增加核心数和线程数属性
-            { name: '内存', price: 75, quantity: 1, spec: '16G' },
-            { name: 'SSD', price: 539, quantity: 1, spec: '1.5T' }, // 1个1.5T SSD
-            { name: 'HDD', price: 279, quantity: 2, spec: '12T' },  // 2个6T HDD = 12T (共1+2=3个盘位，符合12盘位上限)
-            
-            // 固定一次性投入
-            { name: '机箱', price: 50, quantity: 1, spec: '2U' },
-            { name: '网卡', price: 13, quantity: 1, spec: '万兆' },
-            { name: '主板', price: 176, quantity: 1, spec: '例如：RD452X' },
-            { name: '电源', price: 200, quantity: 1, spec: '500W' },
-            { name: '交换机', price: 430, quantity: 0, spec: '例如：思科4948e' }, // 数量为0表示非必须，或按需配置
-            { name: '网线', price: 10, quantity: 5, spec: '少量' },
-            { name: '硬盘笼', price: 80, quantity: 0, spec: '根据盘位需求配置' }, // 数量为0表示非必须，或按需配置
+        // 定义可编辑的推荐配置项及其默认值
+        const EDITABLE_RECOMMENDED_ITEMS = [
+            { id: 'ssd', spec: 'SSD (例如：HK4R 2T 固态硬盘)', defaultPrice: 539, defaultQuantity: 1 },
+            { id: 'hdd', spec: 'HDD (例如：SAS 6T 硬盘)', defaultPrice: 279, defaultQuantity: 2 },
+            { id: 'ram', spec: '内存 (例如：DDR4 16G)', defaultPrice: 75, defaultQuantity: 1 }
+        ];
+
+        // 定义后台固定的投入项及其默认值（不显示给用户）
+        const BACKEND_FIXED_ITEMS = [
+            { name: 'CPU', price: 23, quantity: 1 }, // CPU 变为固定投入
+            { name: '机箱', price: 50, quantity: 1 },
+            { name: '网卡', price: 13, quantity: 1 },
+            { name: '主板', price: 176, quantity: 1 },
+            { name: '电源', price: 200, quantity: 1 },
+            { name: '交换机', price: 430, quantity: 0 }, // 数量为0表示非必须，或按需配置
+            { name: '网线', price: 10, quantity: 5 },
+            { name: '硬盘笼', price: 80, quantity: 0 }, // 数量为0表示非必须，或按需配置
             // 宽带安装费特殊处理，数量由带宽估算
-            { name: '宽带安装费', price: 100, quantity: 0, isBroadbandInstallFee: true, spec: '按条数计算' }
+            { name: '宽带安装费', price: 100, quantity: 0, isBroadbandInstallFee: true }
         ];
 
         // 页面加载时绑定事件和初始化显示
         document.addEventListener('DOMContentLoaded', (event) => {
+            // 初始化可编辑推荐配置项的默认值并绑定事件
+            EDITABLE_RECOMMENDED_ITEMS.forEach(item => {
+                const specInput = document.getElementById(`${item.id}Spec`);
+                const priceInput = document.getElementById(`${item.id}Price`);
+                const quantityInput = document.getElementById(`${item.id}Quantity`);
+
+                if (specInput) specInput.value = item.spec;
+                if (priceInput) priceInput.value = item.defaultPrice;
+                if (quantityInput) quantityInput.value = item.defaultQuantity;
+
+                // 可编辑项的任何变化都需要重新计算成本并验证配置上限
+                if (specInput) specInput.addEventListener('input', () => { calculateEditableRecommendedCost(); validateConfigLimits(); });
+                if (priceInput) priceInput.addEventListener('input', () => { calculateEditableRecommendedCost(); validateConfigLimits(); });
+                if (quantityInput) quantityInput.addEventListener('input', () => { calculateEditableRecommendedCost(); validateConfigLimits(); });
+            });
+
             // 宽带成本和贡献带宽相关的输入框绑定事件
             document.getElementById('broadbandSpeed').addEventListener('input', updateBroadbandCosts);
             document.getElementById('broadbandSpeedUnit').addEventListener('change', updateBroadbandCosts);
@@ -355,9 +354,9 @@
             document.getElementById('bandwidth').addEventListener('input', updateBroadbandCosts);
             document.getElementById('bandwidthUnit').addEventListener('change', updateBroadbandCosts);
 
-            // 页面加载时先计算一次初始总投入和验证
+            // 页面加载时先计算一次初始成本和验证
             updateBroadbandCosts(); // 先更新宽带相关的成本和安装费数量
-            calculateTotalOneTimeCost(); // 计算总的一次性投入
+            calculateEditableRecommendedCost(); // 计算可编辑推荐配置成本
             validateConfigLimits(); // 初始验证配置限制
         });
 
@@ -391,13 +390,14 @@
             document.getElementById('broadbandQuantityNeeded').innerText = numberOfBroadbandsNeeded;
             document.getElementById('displayContributionBandwidth').innerText = `${contributionBandwidth || 0} ${contributionBandwidthUnit}`;
 
-            // 更新 RECOMMENDED_CONFIG_PRICES_QUANTITIES 中宽带安装费的数量
-            const broadbandInstallItem = RECOMMENDED_CONFIG_PRICES_QUANTITIES.find(item => item.isBroadbandInstallFee);
+            // 更新 BACKEND_FIXED_ITEMS 中宽带安装费的数量
+            const broadbandInstallItem = BACKEND_FIXED_ITEMS.find(item => item.isBroadbandInstallFee);
             if (broadbandInstallItem) {
                 broadbandInstallItem.quantity = numberOfBroadbandsNeeded;
             }
             
-            calculateTotalOneTimeCost(); // 数量变化后重新计算总的一次性成本
+            // 宽带数量变化会影响总的一次性投入
+            calculateTotalOneTimeCost(); 
             validateConfigLimits(); // 带宽和宽带数量变化时也验证限制
         }
 
@@ -439,21 +439,44 @@
             return calculatedBroadbandCost;
         }
 
-        // 计算所有一次性投入（基于RECOMMENDED_CONFIG_PRICES_QUANTITIES数组）
-        function calculateTotalOneTimeCost() {
+        // 计算可编辑的推荐配置部分的成本 (SSD, HDD, RAM)
+        function calculateEditableRecommendedCost() {
             let totalCost = 0;
-            RECOMMENDED_CONFIG_PRICES_QUANTITIES.forEach(item => {
+            EDITABLE_RECOMMENDED_ITEMS.forEach(item => {
+                const priceInput = document.getElementById(`${item.id}Price`);
+                const quantityInput = document.getElementById(`${item.id}Quantity`);
+
+                const price = parseFloat(priceInput.value) || 0;
+                const quantity = parseInt(quantityInput.value) || 0;
+                totalCost += price * quantity;
+            });
+            document.getElementById('totalEditableRecommendedCostDisplay').innerText = totalCost.toFixed(2) + " 元";
+            calculateTotalOneTimeCost(); // 任何可编辑项成本变化，都会影响总的一次性投入
+            return totalCost;
+        }
+
+        // 计算后台固定的投入部分的成本
+        function calculateBackendFixedCost() {
+            let totalCost = 0;
+            BACKEND_FIXED_ITEMS.forEach(item => {
                 totalCost += item.price * item.quantity;
             });
-            document.getElementById('totalOneTimeCostDisplay').innerText = totalCost.toFixed(2) + " 元";
             return totalCost;
+        }
+
+        // 计算所有一次性投入（可编辑推荐配置 + 后台固定投入）
+        function calculateTotalOneTimeCost() {
+            const editableCost = calculateEditableRecommendedCost(); // 确保获取最新值
+            const fixedCost = calculateBackendFixedCost();
+            const total = editableCost + fixedCost;
+            document.getElementById('finalTotalOneTimeCost').innerText = total.toFixed(2) + " 元"; // 更新结果总览部分
+            return total;
         }
 
         // 验证单台机器配置上限的函数
         function validateConfigLimits() {
             let bandwidthExceeded = false;
             let driveSlotsExceeded = false;
-            let cpuCoreExceeded = false;
 
             // 1. 验证带宽
             const bandwidth = parseFloat(document.getElementById('bandwidth').value);
@@ -466,12 +489,9 @@
                 bandwidthExceeded = true;
             }
 
-            // 2. 验证硬盘盘位 (从 RECOMMENDED_CONFIG_PRICES_QUANTITIES 数组中获取 SSD 和 HDD 的数量)
-            const ssdItem = RECOMMENDED_CONFIG_PRICES_QUANTITIES.find(item => item.name === 'SSD');
-            const hddItem = RECOMMENDED_CONFIG_PRICES_QUANTITIES.find(item => item.name === 'HDD');
-            
-            const ssdQuantity = ssdItem ? ssdItem.quantity : 0;
-            const hddQuantity = hddItem ? hddItem.quantity : 0;
+            // 2. 验证硬盘盘位 (从可编辑的推荐配置中获取 SSD 和 HDD 的数量)
+            const ssdQuantity = parseInt(document.getElementById('ssdQuantity').value) || 0;
+            const hddQuantity = parseInt(document.getElementById('hddQuantity').value) || 0;
             
             const totalDriveSlots = ssdQuantity + hddQuantity;
 
@@ -479,15 +499,7 @@
                 driveSlotsExceeded = true;
             }
 
-            // 3. 验证 CPU 核心数和线程数 (从 RECOMMENDED_CONFIG_PRICES_QUANTITIES 数组中获取 CPU 的核心数和线程数)
-            const cpuItem = RECOMMENDED_CONFIG_PRICES_QUANTITIES.find(item => item.name === 'CPU');
-            const totalCpuCores = cpuItem ? (cpuItem.cores * cpuItem.quantity) : 0;
-            const totalCpuThreads = cpuItem ? (cpuItem.threads * cpuItem.quantity) : 0;
-
-            if (totalCpuCores > MAX_CPU_CORES || totalCpuThreads > MAX_CPU_THREADS) {
-                cpuCoreExceeded = true;
-            }
-
+            // 3. CPU 核心数限制已移除，因为 CPU 现已是后台固定投入
 
             // 更新页面上的警告信息 (在贡献带宽下方)
             const bandwidthWarningDiv = document.getElementById('bandwidthLimitWarning');
@@ -501,13 +513,18 @@
             const overallLimitWarningDiv = document.getElementById('overallLimitWarning');
             const overallBandwidthWarningLi = document.getElementById('overallBandwidthWarning');
             const overallDriveSlotsWarningLi = document.getElementById('overallDriveSlotsWarning');
-            const overallCpuCoreWarningLi = document.getElementById('overallCpuCoreWarning'); // 新增 CPU 警告元素
+            
+            // 移除 CPU 核心数警告元素
+            const overallCpuCoreWarningLi = document.getElementById('overallCpuCoreWarning');
+            if(overallCpuCoreWarningLi) {
+                overallCpuCoreWarningLi.style.display = 'none'; // 确保不显示
+            }
 
-            if (bandwidthExceeded || driveSlotsExceeded || cpuCoreExceeded) {
+
+            if (bandwidthExceeded || driveSlotsExceeded) {
                 overallLimitWarningDiv.style.display = 'block';
                 overallBandwidthWarningLi.style.display = bandwidthExceeded ? 'list-item' : 'none';
                 overallDriveSlotsWarningLi.style.display = driveSlotsExceeded ? 'list-item' : 'none';
-                overallCpuCoreWarningLi.style.display = cpuCoreExceeded ? 'list-item' : 'none'; // 显示 CPU 警告
             } else {
                 overallLimitWarningDiv.style.display = 'none';
             }
@@ -552,14 +569,15 @@
             const estimatedMonthlyRevenue = actualBandwidthMbps * actualPricePerMbpsPerMonth * onlineRatio;
 
             // --- 成本计算部分 ---
-            const totalOneTimeOverallCost = calculateTotalOneTimeCost(); // 调用总的一次性投入计算函数
+            // calculateTotalOneTimeCost() 会在内部更新 finalTotalOneTimeCost 的显示
+            const totalOneTimeOverallCost = calculateTotalOneTimeCost(); 
             const monthlyBroadbandCost = calculateBroadbandMonthlyCost(); // 调用宽带月度成本计算函数
 
             // --- 更新页面显示 ---
             document.getElementById('finalMonthlyRevenue').innerText = estimatedMonthlyRevenue.toFixed(2) + " 元";
             document.getElementById('finalAnnualRevenue').innerText = (estimatedMonthlyRevenue * 12).toFixed(2) + " 元";
             document.getElementById('finalBroadbandCost').innerText = monthlyBroadbandCost.toFixed(2) + " 元";
-            document.getElementById('finalTotalOneTimeCost').innerText = totalOneTimeOverallCost.toFixed(2) + " 元";
+            // finalTotalOneTimeCost 已经在 calculateTotalOneTimeCost() 中更新
         }
     </script>
 </body>
