@@ -200,6 +200,9 @@
             <p style="font-size: 0.9em; color: #777;">您每月为单条宽带支付的费用。</p>
         </div>
         <div class="total-cost-display">
+            为了贡献 **<span id="displayContributionBandwidth">0</span>**，理论上需要约 <strong><span id="broadbandQuantityNeeded">0</span></strong> 条宽带。
+        </div>
+        <div class="total-cost-display">
             预估月度宽带成本: <strong class="cost-display" id="estimatedBroadbandCost">0.00 元</strong>
             <p style="font-size: 0.8em; color: #777; font-weight: normal;">(根据贡献带宽和单条宽带速度分摊)</p>
         </div>
@@ -343,7 +346,7 @@
             if (broadbandInstallPriceInput) broadbandInstallPriceInput.addEventListener('input', calculateOneTimeCost);
 
 
-            // 宽带成本和贡献带宽相关的输入框绑定事件，确保宽带成本和安装费的实时计算
+            // 宽带成本和贡献带宽相关的输入框绑定事件，确保宽带成本、安装费和所需条数的实时计算
             document.getElementById('broadbandSpeed').addEventListener('input', updateBroadbandCostsAndInstallFee);
             document.getElementById('broadbandSpeedUnit').addEventListener('change', updateBroadbandCostsAndInstallFee);
             document.getElementById('broadbandCost').addEventListener('input', updateBroadbandCostsAndInstallFee);
@@ -355,10 +358,35 @@
             calculateOneTimeCost(); // 再计算总一次性成本
         });
 
-        // 综合更新宽带相关的成本（月租费和安装费）
+        // 综合更新宽带相关的成本（月租费和安装费），并更新所需宽带条数显示
         function updateBroadbandCostsAndInstallFee() {
-            calculateBroadbandMonthlyCost();
-            calculateOneTimeCost(); // 宽带安装费现在是包含在一次性总成本中的，所以每次宽带相关参数变动都需要重新计算一次性总成本
+            calculateBroadbandMonthlyCost(); // 计算月租成本
+            calculateOneTimeCost(); // 计算一次性安装成本
+
+            // 更新所需宽带条数显示
+            const broadbandSpeed = parseFloat(document.getElementById('broadbandSpeed').value);
+            const broadbandSpeedUnit = document.getElementById('broadbandSpeedUnit').value;
+            const contributionBandwidth = parseFloat(document.getElementById('bandwidth').value);
+            const contributionBandwidthUnit = document.getElementById('bandwidthUnit').value;
+
+            let actualBroadbandSpeedMbps = broadbandSpeed;
+            if (broadbandSpeedUnit === 'Gbps') {
+                actualBroadbandSpeedMbps = broadbandSpeed * 1024; // Gbps 转换为 Mbps
+            }
+
+            let actualContributionBandwidthMbps = contributionBandwidth;
+            if (contributionBandwidthUnit === 'Gbps') {
+                actualContributionBandwidthMbps = contributionBandwidth * 1024; // Gbps 转换为 Mbps
+            }
+
+            let numberOfBroadbandsNeeded = 0;
+            if (actualBroadbandSpeedMbps > 0 && actualContributionBandwidthMbps > 0) {
+                numberOfBroadbandsNeeded = Math.ceil(actualContributionBandwidthMbps / actualBroadbandSpeedMbps);
+            } else if (actualContributionBandwidthMbps > 0) {
+                numberOfBroadbandsNeeded = 1; // 如果单条宽带速度为0但有贡献带宽，则至少算1条
+            }
+            document.getElementById('broadbandQuantityNeeded').innerText = numberOfBroadbandsNeeded;
+            document.getElementById('displayContributionBandwidth').innerText = `${contributionBandwidth || 0} ${contributionBandwidthUnit}`;
         }
 
         // 独立计算宽带月度成本的函数
@@ -472,7 +500,7 @@
             let actualPricePerMbpsPerMonth = price;
             // 将单价统一转换为 元/Mbps/月
             if (priceBandwidthUnit === 'Gbps') {
-                actualPricePerMbpsPerMonth = price / 1024; // Gbps 单价转换为 Mbps 单价
+                actualPricePerMbpsPerMonth = actualPricePerMbpsPerMonth / 1024; // Gbps 单价转换为 Mbps 单价
             }
             if (priceTimeUnit === 'day') {
                 actualPricePerMbpsPerMonth = actualPricePerMbpsPerMonth * 30; // 天单价转换为月单价（按30天计算）
