@@ -3,25 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>带宽收益与成本计算器</title>
+    <title>服务器配置与成本收益分析</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 20px;
-            background-color: #f4f4f4;
+            padding: 0;
+            background-color: #f4f7f6;
             color: #333;
+            line-height: 1.6;
         }
         .container {
-            max-width: 800px; /* 调整容器宽度以适应更多可编辑项 */
-            margin: 0 auto;
-            background-color: #fff;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #ffffff;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
-        h1, h2 {
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        h1 {
             text-align: center;
             color: #0056b3;
+            margin-bottom: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section p, .section ul {
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: none; /* 移除默认列表点 */
+            padding-left: 0; /* 移除默认内边距 */
+        }
+        ul li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        ul li strong {
+            min-width: 120px; /* 确保标签对齐 */
+        }
+        ul li input[type="number"] {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        ul li span.unit {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #555;
+        }
+        .total-price {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #e67e22;
+            margin-top: 20px;
+            text-align: right;
+            padding-right: 10px;
         }
         .input-group {
             margin-bottom: 15px;
@@ -31,519 +94,410 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        .input-group input[type="number"],
-        .input-group select {
-            width: calc(100% - 120px);
+        .input-group input[type="text"],
+        .input-group input[type="number"] {
+            width: calc(100% - 22px);
             padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            display: inline-block;
-            vertical-align: middle;
+            border-radius: 5px;
+            font-size: 1em;
         }
-        .input-group select {
-            width: 100px;
-            margin-left: 5px;
+        .input-group input[type="number"].quantity-input {
+            width: 80px; /* Make quantity input smaller */
         }
-        .input-group .half-width {
-            width: calc(50% - 10px);
-        }
-        .input-group .select-group {
-            width: calc(50% - 5px);
-            display: inline-block;
-            vertical-align: middle;
-        }
-        /* 可编辑硬件投入部分的样式 */
-        .editable-hardware-section {
-            background-color: #f9f9f9;
-            border: 1px solid #eee;
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 20px;
-        }
-        .editable-hardware-section h3 {
-            text-align: center;
-            color: #0056b3;
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-        .hardware-cost-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            padding-left: 10px;
-        }
-        .hardware-cost-item input[type="text"].spec-input {
-            flex: 2; /* 描述部分占据更多空间 */
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            margin-right: 10px;
-        }
-        .hardware-cost-item input[type="number"].price-input {
-            width: 80px; /* 价格输入框固定宽度 */
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            text-align: right;
-        }
-        .hardware-cost-item .unit-label {
-            margin: 0 5px;
-        }
-        .hardware-cost-item input[type="number"].quantity-input {
-            width: 60px; /* 数量输入框固定宽度 */
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            text-align: center;
-            margin-left: 5px;
-        }
-        .hardware-cost-item .info-text {
-            font-size: 0.9em;
-            color: #777;
-            margin-left: 10px;
-            flex: 1; /* 占据剩余空间 */
-        }
-        .total-cost-display {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px dashed #eee;
-            font-size: 1.1em;
-            font-weight: bold;
-            text-align: right;
-        }
-        .total-hardware-cost {
-            font-size: 1.2em;
-            color: #dc3545;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px dashed #eee;
-            text-align: right;
-            font-weight: bold;
-        }
-
         button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
+            padding: 10px 20px;
+            background-color: #28a745;
             color: white;
             border: none;
-            border-radius: 4px;
-            font-size: 18px;
+            border-radius: 5px;
             cursor: pointer;
-            margin-top: 20px;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #218838;
         }
-        .results {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+        #customHardwareList div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
         }
-        .results p {
-            font-size: 1.1em;
-            margin-bottom: 10px;
+        #customHardwareList input {
+            flex: 1;
         }
-        .results strong {
-            color: #28a745;
-            font-size: 1.2em;
-        }
-        .results .cost-display {
-            color: #dc3545;
-        }
-        .disclaimer {
+        .remove-btn {
+            background-color: #dc3545;
+            padding: 5px 10px;
             font-size: 0.9em;
-            color: #666;
-            margin-top: 20px;
-            text-align: center;
+            margin-top: 0;
         }
-        .warning-message {
-            color: #dc3545; /* Red color for warnings */
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+        .cost-input, .revenue-input {
+            width: 120px;
+            margin-left: 10px;
+        }
+        .calculation-result {
+            font-size: 1.2em;
             font-weight: bold;
-            text-align: center;
-            margin-top: 10px;
-            padding: 5px;
-            border: 1px solid #dc3545;
-            background-color: #f8d7da;
-            border-radius: 4px;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #eaf7ed;
+            border-left: 5px solid #28a745;
+        }
+        .calculation-result.negative {
+            background-color: #ffeaea;
+            border-left: 5px solid #dc3545;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>带宽收益与成本计算器</h1>
-        <p>输入您的带宽贡献数据和宽带信息，即可估算潜在收益和成本。</p>
+        <h1>服务器配置与成本收益分析</h1>
 
-        <hr>
-
-        <h2>硬件投入（可编辑）</h2>
-        <p style="font-size: 0.9em; color: #777; margin-bottom: 15px; text-align: center;">
-            请根据您的实际需求修改以下硬件的型号、单价和数量。我们将提供推荐默认值。
-        </p>
-        <div class="editable-hardware-section">
-            <div id="hardwareInputsContainer"></div>
-            
-            <div class="total-hardware-cost">
-                总一次性硬件投入: <strong class="cost-display" id="totalHardwareCostDisplay">0.00 元</strong>
-                <p style="font-size: 0.8em; color: #777; font-weight: normal;">(根据您设置的硬件价格和数量估算)</p>
-            </div>
+        <div class="section">
+            <h2>一、推荐配置（可自定义价格）</h2>
+            <p>以下是一些搭建服务器的推荐配置，你可以根据需求调整价格和规格。未填写的项将按0元计算。</p>
+            <ul>
+                <li data-name="宽带月租" data-unit="元/月" data-default-price="100" data-type="monthly">
+                    <strong>宽带速度：</strong>
+                    <span>500Mbps 上行/500Mbps 下行 或更高，月租约</span>
+                    <input type="number" id="broadbandPrice" value="100" min="0" onchange="calculateTotalPrice()">
+                    <span class="unit">元/月</span>
+                </li>
+                <li data-name="宽带安装费" data-unit="元" data-default-price="100" data-type="one-time">
+                    <strong>宽带安装费：</strong>
+                    <span>一次性安装费用约</span>
+                    <input type="number" id="broadbandInstallFee" value="100" min="0" onchange="calculateTotalPrice()">
+                    <span class="unit">元</span>
+                </li>
+                <li data-name="内存 (32G)" data-unit="元" data-default-price="300" data-type="one-time">
+                    <strong>内存 (RAM - 例如 32GB)：</strong>
+                    <span>至少 32GB DDR3/DDR4 ECC 内存，价格约</span>
+                    <input type="number" id="ram32gPrice" value="300" min="0" onchange="calculateTotalPrice()">
+                    <span class="unit">元</span>
+                </li>
+                <li data-name="内存 (16G)" data-unit="元" data-default-price="75" data-type="one-time">
+                    <strong>内存 (RAM - 例如 16GB)：</strong>
+                    <span>16GB DDR3/DDR4 内存，价格约</span>
+                    <input type="number" id="ram16gPrice" value="75" min="0" onchange="calculateTotalPrice()">
+                    <span class="unit">元</span>
+                </li>
+                <li data-name="固态硬盘" data-unit="元" data-default-price="539" data-type="one-time">
+                    <strong>固态硬盘 (SSD)：</strong>
+                    <span>2TB NVMe 或 SATA 企业级 SSD，价格约</span>
+                    <input type="number" id="ssdPrice" value="539" min="0" onchange="calculateTotalPrice()">
+                    <span class="unit">元</span>
+                </li>
+                <li data-name="机械硬盘" data-unit="元" data-default-price="280" data-type="one-time">
+                    <strong>机械硬盘 (HDD)：</strong>
+                    <span>根据需求配置 12TB 或更高容量的企业级机械硬盘，价格约</span>
+                    <input type="number" id="hddPrice" value="280" min="0" onchange="calculateTotalPrice()">
+                    <span class="unit">元</span>
+                </li>
+            </ul>
         </div>
 
-        <hr>
+        <div class="section">
+            <h2>二、硬件价格与自定义</h2>
+            <p>以下是默认的固定硬件清单及其参考价格。这些项无论是否填写推荐配置，都将计入一次性总投入。</p>
+            <table id="hardwareTable">
+                <thead>
+                    <tr>
+                        <th>硬件名称</th>
+                        <th>单价 (元)</th>
+                        <th>数量</th>
+                        <th>小计 (元)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-name="主板" data-default-price="169" data-type="one-time">
+                        <td>主板 (RD452x)</td>
+                        <td><input type="number" value="169" min="0" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td class="subtotal">169</td>
+                    </tr>
+                    <tr data-name="CPU" data-default-price="50" data-type="one-time">
+                        <td>CPU (E5-2683v3 * 2)</td>
+                        <td><input type="number" value="50" min="0" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td class="subtotal">50</td>
+                    </tr>
+                    <tr data-name="网卡" data-default-price="20" data-type="one-time">
+                        <td>网卡 (2308 OCP)</td>
+                        <td><input type="number" value="20" min="0" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td class="subtotal">20</td>
+                    </tr>
+                    <tr data-name="电源" data-default-price="200" data-type="one-time">
+                        <td>电源 (二手长城巨龙双路)</td>
+                        <td><input type="number" value="200" min="0" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td class="subtotal">200</td>
+                    </tr>
+                    <tr data-name="机箱" data-default-price="50" data-type="one-time">
+                        <td>机箱 (开放式)</td>
+                        <td><input type="number" value="50" min="0" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td class="subtotal">50</td>
+                    </tr>
+                    <tr data-name="交换机" data-default-price="430" data-type="one-time">
+                        <td>交换机 (思科4948E)</td>
+                        <td><input type="number" value="430" min="0" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td class="subtotal">430</td>
+                    </tr>
+                    <tr data-name="网线" data-default-price="50" data-type="one-time">
+                        <td>网线</td>
+                        <td><input type="number" value="50" min="0" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td class="subtotal">50</td>
+                    </tr>
+                    </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="total-price">总计 (一次性投入):</td>
+                        <td id="totalOneTimeCost" class="total-price">0</td>
+                    </tr>
+                </tfoot>
+            </table>
 
-        <h2>带宽收益估算</h2>
-
-        <div class="input-group">
-            <label for="bandwidth">贡献带宽:</label>
-            <input type="number" id="bandwidth" placeholder="例如：100" step="0.1" oninput="validateConfigLimits()">
-            <select id="bandwidthUnit" onchange="validateConfigLimits()">
-                <option value="Mbps">Mbps</option>
-                <option value="Gbps">Gbps</option>
-            </select>
-            <p style="font-size: 0.9em; color: #777;">您的平均上传带宽或可提供带宽。</p>
-            <div id="bandwidthLimitWarning" class="warning-message" style="display:none;">
-                注意：单台机器最大支持 7Gbps 带宽，您的输入已超出！
+            <h3>自定义添加其他硬件</h3>
+            <div id="customHardwareList">
+                </div>
+            <div class="input-group">
+                <label for="newHardwareName">硬件名称:</label>
+                <input type="text" id="newHardwareName" placeholder="例如：显卡">
             </div>
-        </div>
-
-        <div class="input-group">
-            <label for="price">带宽单价:</label>
-            <input type="number" id="price" placeholder="例如：0.05" step="0.001" class="half-width">
-            <div class="select-group">
-                <select id="priceBandwidthUnit" style="width: calc(50% - 5px);">
-                    <option value="Mbps">Mbps</option>
-                    <option value="Gbps">Gbps</option>
+            <div class="input-group">
+                <label for="newHardwarePrice">单价 (元):</label>
+                <input type="number" id="newHardwarePrice" min="0" value="0">
+            </div>
+             <div class="input-group">
+                <label for="newHardwareQuantity">数量:</label>
+                <input type="number" id="newHardwareQuantity" min="1" value="1" class="quantity-input">
+            </div>
+            <div class="input-group">
+                <label for="newHardwareType">费用类型:</label>
+                <select id="newHardwareType">
+                    <option value="one-time">一次性投入</option>
+                    <option value="monthly">每月固定成本</option>
                 </select>
-                <select id="priceTimeUnit" style="width: calc(50% - 5px); margin-left: 5px;">
-                    <option value="month">/月</option>
-                    <option value="day">/天</option>
-                </select>
             </div>
-            <p style="font-size: 0.9em; color: #777;">根据平台公布的计费标准。</p>
+            <button onclick="addCustomHardware()">添加硬件</button>
         </div>
 
-        <div class="input-group">
-            <label>平均在线时长 (小时/天):</label>
-            <p style="font-size: 1.1em; font-weight: bold; color: #0056b3;">24 小时 (默认值)</p>
-            <p style="font-size: 0.9em; color: #777;">本计算器默认设备每天在线 24 小时。</p>
-        </div>
-
-        <hr>
-
-        <h2>宽带成本估算</h2>
-        <div class="input-group">
-            <label for="broadbandSpeed">您单条宽带的下载速度:</label>
-            <input type="number" id="broadbandSpeed" placeholder="例如：100" step="1" oninput="updateBroadbandCosts()">
-            <select id="broadbandSpeedUnit" onchange="updateBroadbandCosts()">
-                <option value="Mbps">Mbps</option>
-                <option value="Gbps">Gbps</option>
-            </select>
-            <p style="font-size: 0.9em; color: #777;">您单个宽带套餐的实际速度。</p>
-        </div>
-        <div class="input-group">
-            <label for="broadbandCost">您单条宽带的月租费 (元):</label>
-            <input type="number" id="broadbandCost" placeholder="例如：40" step="0.1" oninput="updateBroadbandCosts()">
-            <p style="font-size: 0.9em; color: #777;">您每月为单条宽带支付的费用。</p>
-        </div>
-        <div class="total-cost-display">
-            为了贡献 **<span id="displayContributionBandwidth">0</span>**，理论上需要约 <strong><span id="broadbandQuantityNeeded">0</span></strong> 条宽带。
-        </div>
-        <div class="total-cost-display">
-            预估月度宽带成本: <strong class="cost-display" id="estimatedBroadbandCost">0.00 元</strong>
-            <p style="font-size: 0.8em; color: #777; font-weight: normal;">(根据贡献带宽和单条宽带速度分摊)</p>
-        </div>
-
-        <button onclick="calculateRevenueAndCost()">计算总览</button>
-
-        <hr>
-
-        <h2>计算结果总览</h2>
-        <div class="results">
-            <p>月度预估收益: <strong><span id="finalMonthlyRevenue">0.00 元</span></strong></p>
-            <p>年度预估收益: <strong><span id="finalAnnualRevenue">0.00 元</span></strong></p>
-            <p>月度预估宽带成本: <strong class="cost-display"><span id="finalBroadbandCost">0.00 元</span></strong></p>
-            <p>总一次性投入: <strong class="cost-display"><span id="finalTotalOneTimeCost">0.00 元</span></strong></p>
-            <p style="font-size: 0.9em; color: #777;">（总一次性投入由您设置的硬件价格和数量估算）</p>
-            <div id="overallLimitWarning" class="warning-message" style="display:none;">
-                <p><strong>警告：</strong>您当前的配置可能超出单台机器的理论最大承载能力！</p>
-                <ul style="text-align: left; margin-left: 20px;">
-                    <li id="overallBandwidthWarning" style="display:none;">带宽超出 7Gbps 限制。</li>
-                    <li id="overallCpuCoreWarning" style="display:none;">CPU 核心数超出 28 核心 56 线程限制。</li>
-                    <li id="overallDriveSlotsWarning" style="display:none;">硬盘盘位超出 12 个限制。</li>
-                </ul>
-                <p style="font-size: 0.8em; margin-top: 5px;">请考虑降低配置，或使用多台机器来满足需求。</p>
+        <div class="section">
+            <h2>三、收益与成本分析</h2>
+            <p>请输入你的预计月收益和额外的月成本，我们将为你计算每月盈亏和回本时间。</p>
+            <div class="input-group">
+                <label for="monthlyRevenue">预计每月收益 (元):</label>
+                <input type="number" id="monthlyRevenue" class="revenue-input" value="0" min="0" oninput="calculateProfitLoss()">
+            </div>
+            <div class="input-group">
+                <label for="additionalMonthlyCost">其他每月成本 (元, 例如电费):</label>
+                <input type="number" id="additionalMonthlyCost" class="cost-input" value="0" min="0" oninput="calculateProfitLoss()">
+            </div>
+            <div class="calculation-result" id="profitLossResult">
+                每月盈亏：请填写上方数据进行计算。
+            </div>
+             <div class="calculation-result" id="breakEvenMonths">
+                回本时间：请填写上方数据进行计算。
             </div>
         </div>
-
-        <p class="disclaimer">
-            以上结果为估算值，实际收益和成本可能因平台策略、网络波动、资源利用率、硬件市场价格波动、宽带安装费用差异等因素有所差异。请以实际结算和采购价格为准。
-        </p>
     </div>
 
     <script>
-        // 定义单台机器的配置上限
-        const MAX_BANDWIDTH_GBPS = 7;     // 最大带宽 7Gbps
-        const MAX_DRIVE_SLOTS = 12;       // 最大盘位 12个
-        const MAX_CPU_CORES = 28;         // 最大 CPU 核心数 28
-        const MAX_CPU_THREADS = 56;       // 最大 CPU 线程数 56 (假设 1 核心 = 2 线程)
-
-        // 定义所有可编辑的硬件项及其默认值
-        const ALL_HARDWARE_ITEMS = [
-            // { id: 'cpu', name: 'CPU', defaultSpec: 'CPU (例如：E5 2683V3 16核)', defaultPrice: 23, defaultQuantity: 1, cores: 16, threads: 32 },
-            // 将 CPU 的默认核心数改为 28 核 56 线程
-            { id: 'cpu', name: 'CPU', defaultSpec: 'CPU (例如：E5 2690 28核)', defaultPrice: 2000, defaultQuantity: 1, cores: 28, threads: 56 },
-
-            { id: 'ram', name: '内存', defaultSpec: '内存 (例如：DDR4 16G)', defaultPrice: 75, defaultQuantity: 1 },
-            { id: 'ssd', name: '固态硬盘', defaultSpec: 'SSD (例如：HK4R 2T 固态硬盘)', defaultPrice: 539, defaultQuantity: 1 },
-            { id: 'hdd', name: '机械硬盘', defaultSpec: 'HDD (例如：SAS 6T 硬盘)', defaultPrice: 279, defaultQuantity: 2 },
-            { id: 'chassis', name: '机箱', defaultSpec: '机箱 (例如：2U 机箱)', defaultPrice: 50, defaultQuantity: 1 },
-            { id: 'nic', name: '网卡', defaultSpec: '网卡 (例如：万兆 OCP 网卡)', defaultPrice: 13, defaultQuantity: 1 },
-            { id: 'motherboard', name: '主板', defaultSpec: '主板 (例如：RD452X)', defaultPrice: 176, defaultQuantity: 1 },
-            { id: 'powerSupply', name: '电源', defaultSpec: '电源 (例如：500W 电源)', defaultPrice: 200, defaultQuantity: 1 },
-            { id: 'switch', name: '交换机', defaultSpec: '交换机 (例如：思科4948e)', defaultPrice: 430, defaultQuantity: 0 },
-            { id: 'networkCable', name: '网线', defaultSpec: '网线 (少量)', defaultPrice: 10, defaultQuantity: 5 },
-            { id: 'driveCage', name: '硬盘笼', defaultSpec: '硬盘笼 (根据盘位需求配置)', defaultPrice: 80, defaultQuantity: 0 },
-            // 宽带安装费特殊处理，数量由带宽估算
-            { id: 'broadbandInstallFee', name: '宽带安装费', defaultSpec: '宽带安装费 (按条数计算)', defaultPrice: 100, defaultQuantity: 0, isBroadbandInstallFee: true }
-        ];
-
-        // 页面加载时动态生成硬件输入框并初始化
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const container = document.getElementById('hardwareInputsContainer');
-            ALL_HARDWARE_ITEMS.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'hardware-cost-item';
-                div.innerHTML = `
-                    <input type="text" id="${item.id}Spec" value="${item.defaultSpec}" class="spec-input">
-                    <input type="number" id="${item.id}Price" value="${item.defaultPrice}" step="1" class="price-input" oninput="calculateAllHardwareCosts(); validateConfigLimits();">
-                    <span class="unit-label">元 ×</span>
-                    <input type="number" id="${item.id}Quantity" value="${item.defaultQuantity}" min="0" class="quantity-input" oninput="calculateAllHardwareCosts(); validateConfigLimits();">
-                    <span class="info-text">${item.name}</span>
-                `;
-                container.appendChild(div);
-            });
-
-            // 宽带成本和贡献带宽相关的输入框绑定事件
-            document.getElementById('broadbandSpeed').addEventListener('input', updateBroadbandCosts);
-            document.getElementById('broadbandSpeedUnit').addEventListener('change', updateBroadbandCosts);
-            document.getElementById('broadbandCost').addEventListener('input', updateBroadbandCosts);
-            document.getElementById('bandwidth').addEventListener('input', updateBroadbandCosts);
-            document.getElementById('bandwidthUnit').addEventListener('change', updateBroadbandCosts);
-
-            // 页面加载时先计算一次初始成本和验证
-            updateBroadbandCosts(); // 先更新宽带相关的成本和安装费数量
-            calculateAllHardwareCosts(); // 计算所有硬件的总成本
-            validateConfigLimits(); // 初始验证配置限制
+        // 确保DOM加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateTotalPrice(); // 初始计算总价
+            calculateProfitLoss(); // 初始计算盈亏
         });
 
-        // 综合更新宽带相关的成本（月租费和安装费数量），并更新所需宽带条数显示
-        function updateBroadbandCosts() {
-            calculateBroadbandMonthlyCost(); // 计算月租成本
+        // 存储所有成本项，方便计算
+        const costs = {
+            oneTime: {},
+            monthly: {}
+        };
 
-            // 更新宽带安装费的数量
-            const broadbandSpeed = parseFloat(document.getElementById('broadbandSpeed').value);
-            const broadbandSpeedUnit = document.getElementById('broadbandSpeedUnit').value;
-            const contributionBandwidth = parseFloat(document.getElementById('bandwidth').value);
-            const contributionBandwidthUnit = document.getElementById('bandwidthUnit').value;
+        function calculateTotalPrice() {
+            let totalOneTime = 0;
+            let totalMonthlyRecurring = 0;
 
-            let actualBroadbandSpeedMbps = broadbandSpeed;
-            if (broadbandSpeedUnit === 'Gbps') {
-                actualBroadbandSpeedMbps = broadbandSpeed * 1024; // Gbps 转换为 Mbps
-            }
+            // 清空之前的成本数据，重新汇总
+            costs.oneTime = {};
+            costs.monthly = {};
 
-            let actualContributionBandwidthMbps = contributionBandwidth;
-            if (contributionBandwidthUnit === 'Gbps') {
-                actualContributionBandwidthMbps = contributionBandwidth * 1024; // Gbps 转换为 Mbps
-            }
+            // 计算推荐配置的成本 (现在也支持值为0)
+            document.querySelectorAll('.section:nth-of-type(1) ul li').forEach(item => {
+                const priceInput = item.querySelector('input[type="number"]');
+                const price = parseFloat(priceInput.value) || 0; // 如果为空或无效，则为0
+                const type = item.getAttribute('data-type');
+                const name = item.getAttribute('data-name');
 
-            let numberOfBroadbandsNeeded = 0;
-            if (actualBroadbandSpeedMbps > 0 && actualContributionBandwidthMbps > 0) {
-                numberOfBroadbandsNeeded = Math.ceil(actualContributionBandwidthMbps / actualBroadbandSpeedMbps);
-            } else if (actualContributionBandwidthMbps > 0) {
-                // 如果单条宽带速度为0但有贡献带宽，则至少算1条
-                numberOfBroadbandsNeeded = 1;
-            }
-            document.getElementById('broadbandQuantityNeeded').innerText = numberOfBroadbandsNeeded;
-            document.getElementById('displayContributionBandwidth').innerText = `${contributionBandwidth || 0} ${contributionBandwidthUnit}`;
+                if (type === 'one-time') {
+                    costs.oneTime[name] = price;
+                } else if (type === 'monthly') {
+                    costs.monthly[name] = price;
+                }
+            });
 
-            // 更新宽带安装费的 quantity
-            const broadbandInstallFeeInput = document.getElementById('broadbandInstallFeeQuantity');
-            if (broadbandInstallFeeInput) {
-                broadbandInstallFeeInput.value = numberOfBroadbandsNeeded;
-            }
-            
-            calculateAllHardwareCosts(); // 数量变化后重新计算总的硬件成本
-            validateConfigLimits(); // 带宽和宽带数量变化时也验证限制
-        }
+            // 计算硬件价格表格的成本 (固定投入，无论推荐配置如何)
+            const tableRows = document.querySelectorAll('#hardwareTable tbody tr');
+            tableRows.forEach(row => {
+                const priceInput = row.cells[1].querySelector('input[type="number"]');
+                const quantityInput = row.cells[2].querySelector('input[type="number"]');
+                const subtotalCell = row.querySelector('.subtotal');
 
-        // 独立计算宽带月度成本的函数
-        function calculateBroadbandMonthlyCost() {
-            const broadbandSpeed = parseFloat(document.getElementById('broadbandSpeed').value);
-            const broadbandSpeedUnit = document.getElementById('broadbandSpeedUnit').value;
-            const broadbandMonthlyCost = parseFloat(document.getElementById('broadbandCost').value);
-            const contributionBandwidth = parseFloat(document.getElementById('bandwidth').value);
-            const contributionBandwidthUnit = document.getElementById('bandwidthUnit').value;
+                const price = parseFloat(priceInput ? priceInput.value : 0);
+                const quantity = parseInt(quantityInput ? quantityInput.value : 1);
+                const type = row.getAttribute('data-type');
+                const name = row.getAttribute('data-name');
 
-            if (isNaN(broadbandSpeed) || isNaN(broadbandMonthlyCost) || broadbandMonthlyCost < 0) {
-                document.getElementById('estimatedBroadbandCost').innerText = "0.00 元";
-                return 0;
-            }
+                const subtotal = price * quantity;
+                if (subtotalCell) {
+                    subtotalCell.textContent = subtotal.toFixed(0);
+                }
 
-            let actualBroadbandSpeedMbps = broadbandSpeed;
-            if (broadbandSpeedUnit === 'Gbps') {
-                actualBroadbandSpeedMbps = broadbandSpeed * 1024; // Gbps 转换为 Mbps
-            }
+                if (type === 'one-time') {
+                    costs.oneTime[name] = subtotal;
+                } else if (type === 'monthly') {
+                    costs.monthly[name] = subtotal;
+                }
+            });
 
-            let actualContributionBandwidthMbps = contributionBandwidth;
-            if (contributionBandwidthUnit === 'Gbps') {
-                actualContributionBandwidthMbps = contributionBandwidth * 1024; // Gbps 转换为 Mbps
-            }
-
-            let calculatedBroadbandCost = 0;
-            let numberOfBroadbandsNeeded = 0;
-
-            if (actualBroadbandSpeedMbps > 0 && actualContributionBandwidthMbps > 0) {
-                numberOfBroadbandsNeeded = Math.ceil(actualContributionBandwidthMbps / actualBroadbandSpeedMbps);
-            } else if (actualContributionBandwidthMbps > 0) {
-                 numberOfBroadbandsNeeded = 1;
-            }
-
-            calculatedBroadbandCost = broadbandMonthlyCost * numberOfBroadbandsNeeded;
-
-            document.getElementById('estimatedBroadbandCost').innerText = calculatedBroadbandCost.toFixed(2) + " 元";
-            return calculatedBroadbandCost;
-        }
-
-        // 计算所有可编辑的硬件成本
-        function calculateAllHardwareCosts() {
-            let totalCost = 0;
-            ALL_HARDWARE_ITEMS.forEach(item => {
-                const priceInput = document.getElementById(`${item.id}Price`);
-                const quantityInput = document.getElementById(`${item.id}Quantity`);
+            // 计算自定义硬件的成本
+            document.querySelectorAll('#customHardwareList .custom-hardware-item').forEach(item => {
+                const priceInput = item.querySelector('.custom-price-input');
+                const quantityInput = item.querySelector('.custom-quantity-input');
+                const typeSelect = item.querySelector('.custom-type-select');
+                const nameSpan = item.querySelector('.custom-name-span');
 
                 const price = parseFloat(priceInput.value) || 0;
-                const quantity = parseInt(quantityInput.value) || 0;
-                totalCost += price * quantity;
+                const quantity = parseInt(quantityInput.value) || 1;
+                const type = typeSelect.value;
+                // 获取名称，去除可能的“ (移除)”后缀
+                const name = nameSpan.textContent.replace(/\s*\(移除\)$/, '').split('(')[0].trim();
+
+                const subtotal = price * quantity;
+
+                if (type === 'one-time') {
+                    costs.oneTime[name] = subtotal;
+                } else if (type === 'monthly') {
+                    costs.monthly[name] = subtotal;
+                }
             });
-            document.getElementById('totalHardwareCostDisplay').innerText = totalCost.toFixed(2) + " 元";
-            document.getElementById('finalTotalOneTimeCost').innerText = totalCost.toFixed(2) + " 元"; // 更新结果总览部分
-            return totalCost;
+
+            // 汇总一次性投入和每月经常性成本
+            for (const key in costs.oneTime) {
+                totalOneTime += costs.oneTime[key];
+            }
+            for (const key in costs.monthly) {
+                totalMonthlyRecurring += costs.monthly[key];
+            }
+
+            document.getElementById('totalOneTimeCost').textContent = totalOneTime.toFixed(0);
+            calculateProfitLoss(); // 重新计算总价后，也重新计算盈亏和回本时间
         }
 
-        // 验证单台机器配置上限的函数
-        function validateConfigLimits() {
-            let bandwidthExceeded = false;
-            let driveSlotsExceeded = false;
-            let cpuCoreExceeded = false;
+        // 用于更新硬件表格中单行价格和小计的函数
+        function updateRowPrice(inputElement) {
+            const row = inputElement.closest('tr');
+            const price = parseFloat(row.cells[1].querySelector('input[type="number"]').value) || 0;
+            const quantity = parseInt(row.cells[2].querySelector('input[type="number"]').value) || 1;
 
-            // 1. 验证带宽
-            const bandwidth = parseFloat(document.getElementById('bandwidth').value);
-            const bandwidthUnit = document.getElementById('bandwidthUnit').value;
-            let actualBandwidthGbps = bandwidth;
-            if (bandwidthUnit === 'Mbps') {
-                actualBandwidthGbps = bandwidth / 1024; // Mbps 转换为 Gbps
-            }
-            if (actualBandwidthGbps > MAX_BANDWIDTH_GBPS) {
-                bandwidthExceeded = true;
-            }
-
-            // 2. 验证硬盘盘位 (从可编辑的推荐配置中获取 SSD 和 HDD 的数量)
-            const ssdQuantity = parseInt(document.getElementById('ssdQuantity').value) || 0;
-            const hddQuantity = parseInt(document.getElementById('hddQuantity').value) || 0;
-            const totalDriveSlots = ssdQuantity + hddQuantity;
-
-            if (totalDriveSlots > MAX_DRIVE_SLOTS) {
-                driveSlotsExceeded = true;
-            }
-
-            // 3. 验证 CPU 核心数和线程数
-            const cpuItem = ALL_HARDWARE_ITEMS.find(item => item.id === 'cpu');
-            const cpuQuantity = parseInt(document.getElementById('cpuQuantity').value) || 0;
-            // 确保 cpuItem 存在且有 cores/threads 属性，否则默认为0
-            const currentCpuCores = (cpuItem && cpuItem.cores) ? cpuItem.cores * cpuQuantity : 0;
-            const currentCpuThreads = (cpuItem && cpuItem.threads) ? cpuItem.threads * cpuQuantity : 0;
-
-            if (currentCpuCores > MAX_CPU_CORES || currentCpuThreads > MAX_CPU_THREADS) {
-                cpuCoreExceeded = true;
-            }
-
-
-            // 更新页面上的警告信息 (在贡献带宽下方)
-            const bandwidthWarningDiv = document.getElementById('bandwidthLimitWarning');
-            if (bandwidthExceeded) {
-                bandwidthWarningDiv.style.display = 'block';
-            } else {
-                bandwidthWarningDiv.style.display = 'none';
-            }
-
-            // 更新最终结果区域的警告信息
-            const overallLimitWarningDiv = document.getElementById('overallLimitWarning');
-            const overallBandwidthWarningLi = document.getElementById('overallBandwidthWarning');
-            const overallDriveSlotsWarningLi = document.getElementById('overallDriveSlotsWarning');
-            const overallCpuCoreWarningLi = document.getElementById('overallCpuCoreWarning'); 
-
-            if (bandwidthExceeded || driveSlotsExceeded || cpuCoreExceeded) {
-                overallLimitWarningDiv.style.display = 'block';
-                overallBandwidthWarningLi.style.display = bandwidthExceeded ? 'list-item' : 'none';
-                overallDriveSlotsWarningLi.style.display = driveSlotsExceeded ? 'list-item' : 'none';
-                overallCpuCoreWarningLi.style.display = cpuCoreExceeded ? 'list-item' : 'none';
-            } else {
-                overallLimitWarningDiv.style.display = 'none';
-            }
+            const subtotal = price * quantity;
+            row.querySelector('.subtotal').textContent = subtotal.toFixed(0);
+            calculateTotalPrice(); // 价格改变后重新计算总价
         }
 
-        // 综合计算收益和成本的函数
-        function calculateRevenueAndCost() {
-            validateConfigLimits(); // 再次验证配置限制，确保结果总览部分显示最新警告
+        function addCustomHardware() {
+            const nameInput = document.getElementById('newHardwareName');
+            const priceInput = document.getElementById('newHardwarePrice');
+            const quantityInput = document.getElementById('newHardwareQuantity');
+            const typeSelect = document.getElementById('newHardwareType');
 
-            // --- 收益计算部分 ---
-            const bandwidth = parseFloat(document.getElementById('bandwidth').value);
-            const bandwidthUnit = document.getElementById('bandwidthUnit').value; // 'Mbps' or 'Gbps'
-            const price = parseFloat(document.getElementById('price').value);
-            const priceBandwidthUnit = document.getElementById('priceBandwidthUnit').value; // 'Mbps' or 'Gbps'
-            const priceTimeUnit = document.getElementById('priceTimeUnit').value; // 'month' or 'day'
+            const name = nameInput.value.trim();
+            const price = parseFloat(priceInput.value);
+            const quantity = parseInt(quantityInput.value);
+            const type = typeSelect.value;
 
-            // 输入验证
-            if (isNaN(bandwidth) || isNaN(price)) {
-                alert("请确保 '贡献带宽' 和 '带宽单价' 都已正确填写数字！");
+            if (!name || isNaN(price) || price < 0 || isNaN(quantity) || quantity < 1) {
+                alert('请填写有效的硬件名称、单价、数量和费用类型！');
                 return;
             }
 
-            let actualBandwidthMbps = bandwidth;
-            if (bandwidthUnit === 'Gbps') {
-                actualBandwidthMbps = bandwidth * 1024; // Gbps 转换为 Mbps
+            const customHardwareList = document.getElementById('customHardwareList');
+            const newItem = document.createElement('div');
+            newItem.className = 'custom-hardware-item';
+            newItem.setAttribute('data-name', name);
+            newItem.setAttribute('data-type', type);
+
+            newItem.innerHTML = `
+                <span class="custom-name-span">${name} (${type === 'one-time' ? '一次性' : '每月'})</span>
+                单价: <input type="number" class="custom-price-input" value="${price}" min="0" onchange="calculateTotalPrice()">
+                数量: <input type="number" class="custom-quantity-input quantity-input" value="${quantity}" min="1" onchange="calculateTotalPrice()">
+                <select class="custom-type-select" style="display:none;"><option value="${type}">${type}</option></select>
+                <button class="remove-btn" onclick="removeCustomHardware(this)">移除</button>
+            `;
+            customHardwareList.appendChild(newItem);
+
+            nameInput.value = '';
+            priceInput.value = '0';
+            quantityInput.value = '1';
+            typeSelect.value = 'one-time';
+
+            calculateTotalPrice();
+        }
+
+        function removeCustomHardware(buttonElement) {
+            const item = buttonElement.closest('.custom-hardware-item');
+            const name = item.getAttribute('data-name');
+            const type = item.getAttribute('data-type');
+
+            if (type === 'one-time') {
+                delete costs.oneTime[name];
+            } else if (type === 'monthly') {
+                delete costs.monthly[name];
+            }
+            item.remove();
+            calculateTotalPrice();
+        }
+
+        function calculateProfitLoss() {
+            const totalOneTimeCost = parseFloat(document.getElementById('totalOneTimeCost').textContent) || 0;
+            const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue').value) || 0;
+            const additionalMonthlyCost = parseFloat(document.getElementById('additionalMonthlyCost').value) || 0;
+
+            let totalMonthlyRecurringCost = 0;
+            for (const key in costs.monthly) {
+                totalMonthlyRecurringCost += costs.monthly[key];
             }
 
-            let actualPricePerMbpsPerMonth = price;
-            // 将单价统一转换为 元/Mbps/月
-            if (priceBandwidthUnit === 'Gbps') {
-                actualPricePerMbpsPerMonth = actualPricePerMbpsPerMonth / 1024; // Gbps 单价转换为 Mbps 单价
+            const totalMonthlyExpenditure = totalMonthlyRecurringCost + additionalMonthlyCost;
+            const monthlyProfitLoss = monthlyRevenue - totalMonthlyExpenditure;
+
+            const profitLossResultDiv = document.getElementById('profitLossResult');
+            profitLossResultDiv.textContent = `每月盈亏：${monthlyProfitLoss.toFixed(0)} 元`;
+            profitLossResultDiv.classList.toggle('negative', monthlyProfitLoss < 0);
+
+            // 计算回本时间
+            const breakEvenMonthsDiv = document.getElementById('breakEvenMonths');
+            if (monthlyProfitLoss > 0) {
+                const monthsToBreakEven = totalOneTimeCost / monthlyProfitLoss;
+                breakEvenMonthsDiv.textContent = `回本时间：约 ${monthsToBreakEven.toFixed(1)} 月`;
+                breakEvenMonthsDiv.classList.remove('negative');
+            } else if (monthlyProfitLoss <= 0 && totalOneTimeCost > 0) {
+                 breakEvenMonthsDiv.textContent = `回本时间：无法回本（每月亏损或持平）`;
+                 breakEvenMonthsDiv.classList.add('negative');
+            } else {
+                 breakEvenMonthsDiv.textContent = `回本时间：无需回本（无初始投入或立即盈利）`;
+                 breakEvenMonthsDiv.classList.remove('negative');
             }
-            if (priceTimeUnit === 'day') {
-                actualPricePerMbpsPerMonth = actualPricePerMbpsPerMonth * 30; // 天单价转换为月单价（按30天计算）
-            }
-
-            // 平均在线时长固定为 24 小时，即在线比例为 1
-            const onlineRatio = 1;
-
-            // 估算月度总收益
-            const estimatedMonthlyRevenue = actualBandwidthMbps * actualPricePerMbpsPerMonth * onlineRatio;
-
-            // --- 成本计算部分 ---
-            // calculateAllHardwareCosts() 会在内部更新 totalHardwareCostDisplay 和 finalTotalOneTimeCost 的显示
-            calculateAllHardwareCosts(); 
-            const monthlyBroadbandCost = calculateBroadbandMonthlyCost(); // 调用宽带月度成本计算函数
-
-            // --- 更新页面显示 ---
-            document.getElementById('finalMonthlyRevenue').innerText = estimatedMonthlyRevenue.toFixed(2) + " 元";
-            document.getElementById('finalAnnualRevenue').innerText = (estimatedMonthlyRevenue * 12).toFixed(2) + " 元";
-            document.getElementById('finalBroadbandCost').innerText = monthlyBroadbandCost.toFixed(2) + " 元";
-            // finalTotalOneTimeCost 已经在 calculateAllHardwareCosts() 中更新
         }
     </script>
 </body>
