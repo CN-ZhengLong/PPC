@@ -19,7 +19,7 @@
             background-color: #ffffff;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 15px rgba[0, 0, 0, 0.1];
         }
         h1, h2, h3 {
             color: #2c3e50;
@@ -371,7 +371,7 @@
             <div class="flex-row input-group">
                 <label for="enableFixedRevenue">
                     <input type="checkbox" id="enableFixedRevenue" onchange="toggleFixedRevenueOptions(); calculateProfitLoss();">
-                    启用每日固定带宽收益
+                    启用每日固定带宽收益 (按比例计算)
                 </label>
             </div>
 
@@ -392,19 +392,15 @@
 
             <div id="fixedRevenueDetails" style="display: none;">
                 <div class="flex-row input-group">
-                    <label for="fixedBandwidthSpeed">每日固定速度:</label>
+                    <label>每日每:</label>
                     <div class="input-wrapper">
-                        <input type="number" id="fixedBandwidthSpeed" value="100" min="0" oninput="calculateProfitLoss()" class="revenue-input">
-                        <select id="fixedBandwidthSpeedUnit" onchange="calculateProfitLoss()">
+                        <input type="number" id="fixedBandwidthSpeedFactor" value="100" min="1" oninput="calculateProfitLoss()" class="revenue-input">
+                        <select id="fixedBandwidthSpeedFactorUnit" onchange="calculateProfitLoss()">
                             <option value="Mbps">Mbps</option>
                             <option value="Gbps">Gbps</option>
                         </select>
-                    </div>
-                </div>
-                <div class="flex-row input-group">
-                    <label for="fixedBandwidthRevenue">每日收入:</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="fixedBandwidthRevenue" value="50" min="0" oninput="calculateProfitLoss()" class="revenue-input"> 元/日
+                        <span>收入</span>
+                        <input type="number" id="fixedBandwidthRevenueAmount" value="50" min="0" oninput="calculateProfitLoss()" class="revenue-input"> 元
                     </div>
                 </div>
             </div>
@@ -603,28 +599,29 @@
             // --- 收益计算 ---
             const enableFixedRevenue = document.getElementById('enableFixedRevenue').checked;
 
+            const actualBandwidth = parseFloat(document.getElementById('actualBandwidth').value) || 0;
+            const actualBandwidthUnit = document.getElementById('actualBandwidthUnit').value;
+
+            let totalActualMbps = actualBandwidth;
+            if (actualBandwidthUnit === 'Gbps') {
+                totalActualMbps = actualBandwidth * 1000;
+            }
+
+
             if (enableFixedRevenue) {
-                // 使用每日固定带宽收益
-                const fixedBandwidthSpeed = parseFloat(document.getElementById('fixedBandwidthSpeed').value) || 0;
-                const fixedBandwidthSpeedUnit = document.getElementById('fixedBandwidthSpeedUnit').value;
-                const fixedBandwidthRevenue = parseFloat(document.getElementById('fixedBandwidthRevenue').value) || 0;
+                // 使用每日固定带宽收益 (按比例计算)
+                const fixedBandwidthSpeedFactor = parseFloat(document.getElementById('fixedBandwidthSpeedFactor').value) || 0;
+                const fixedBandwidthSpeedFactorUnit = document.getElementById('fixedBandwidthSpeedFactorUnit').value;
+                const fixedBandwidthRevenueAmount = parseFloat(document.getElementById('fixedBandwidthRevenueAmount').value) || 0;
 
-                const actualBandwidth = parseFloat(document.getElementById('actualBandwidth').value) || 0;
-                const actualBandwidthUnit = document.getElementById('actualBandwidthUnit').value;
-
-                let totalActualMbps = actualBandwidth;
-                if (actualBandwidthUnit === 'Gbps') {
-                    totalActualMbps = actualBandwidth * 1000;
+                let fixedSpeedFactorMbps = fixedBandwidthSpeedFactor;
+                if (fixedBandwidthSpeedFactorUnit === 'Gbps') {
+                    fixedSpeedFactorMbps = fixedBandwidthSpeedFactor * 1000;
                 }
 
-                let fixedSpeedMbps = fixedBandwidthSpeed;
-                if (fixedBandwidthSpeedUnit === 'Gbps') {
-                    fixedSpeedMbps = fixedBandwidthSpeed * 1000;
-                }
-
-                if (fixedSpeedMbps > 0) {
-                    const dailyRevenuePerMbps = fixedBandwidthRevenue / fixedSpeedMbps;
-                    calculatedBandwidthRevenueMonthly = dailyRevenuePerMbps * totalActualMbps * DAYS_IN_MONTH;
+                if (fixedSpeedFactorMbps > 0) {
+                    const revenuePerMbpsPerDay = fixedBandwidthRevenueAmount / fixedSpeedFactorMbps;
+                    calculatedBandwidthRevenueMonthly = revenuePerMbpsPerDay * totalActualMbps * DAYS_IN_MONTH;
                 } else {
                     calculatedBandwidthRevenueMonthly = 0;
                 }
@@ -633,16 +630,7 @@
                 // 使用每单位带宽收益 (原有逻辑)
                 const bandwidthRevenuePerUnit = parseFloat(document.getElementById('bandwidthRevenuePerUnit').value) || 0;
                 const bandwidthRevenueRateUnit = document.getElementById('bandwidthRevenueRateUnit').value; // e.g., "Gbps_monthly", "Mbps_daily"
-                const actualBandwidth = parseFloat(document.getElementById('actualBandwidth').value) || 0;
-                const actualBandwidthUnit = document.getElementById('actualBandwidthUnit').value; // "Mbps" or "Gbps"
-
-                // 1. 将服务器总带宽转换为统一的 Mbps
-                let totalActualMbps = actualBandwidth;
-                if (actualBandwidthUnit === 'Gbps') {
-                    totalActualMbps = actualBandwidth * 1000;
-                }
-
-                // 2. 根据收益率单位和实际带宽计算出每月总收益
+                
                 // 首先将收益率的基础单位统一到 Mbps
                 let revenueRatePerMbps = bandwidthRevenuePerUnit; // 默认按输入值
                 if (bandwidthRevenueRateUnit.includes('Gbps')) {
