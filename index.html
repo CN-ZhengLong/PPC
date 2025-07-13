@@ -49,7 +49,7 @@
             gap: 10px;
         }
         ul li strong {
-            min-width: 120px; /* 确保标签对齐 */
+            min-width: 150px; /* 确保标签对齐 */
         }
         ul li input[type="number"] {
             width: 100px;
@@ -61,6 +61,7 @@
         ul li span.unit {
             font-size: 0.9em;
             color: #666;
+            margin-left: 5px;
         }
 
         table {
@@ -103,7 +104,7 @@
             font-size: 1em;
         }
         .input-group input[type="number"].quantity-input {
-            width: 80px; /* Make quantity input smaller */
+            width: 60px; /* Make quantity input smaller */
         }
         button {
             padding: 10px 20px;
@@ -165,6 +166,11 @@
             align-items: center;
             gap: 5px;
         }
+        .input-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
     </style>
 </head>
 <body>
@@ -172,8 +178,8 @@
         <h1>服务器配置与成本收益分析</h1>
 
         <div class="section">
-            <h2>一、推荐配置（可自定义价格）</h2>
-            <p>以下是一些搭建服务器的推荐配置，你可以根据需求调整价格和规格。未填写的项将按0元计算。</p>
+            <h2>一、可修改的配置（宽带、内存、硬盘）</h2>
+            <p>请根据你的需求调整以下配置的价格和容量。系统将自动计算所需数量并计入总投入。</p>
             <ul>
                 <li data-name="宽带月租" data-unit="元/月" data-default-price="100" data-type="monthly">
                     <strong>宽带月租：</strong>
@@ -187,37 +193,52 @@
                     <input type="number" id="broadbandInstallFee" value="100" min="0" onchange="calculateTotalPrice()">
                     <span class="unit">元</span>
                 </li>
-                <li data-name="内存 (32G)" data-unit="元" data-default-price="300" data-type="one-time">
-                    <strong>内存 (RAM - 32GB)：</strong>
-                    <span>至少 32GB DDR3/DDR4 ECC 内存，价格约</span>
-                    <input type="number" id="ram32gPrice" value="300" min="0" onchange="calculateTotalPrice()">
-                    <span class="unit">元</span>
+                <li data-name="内存" data-unit="元" data-default-price="75" data-type="one-time" data-capacity-unit="GB">
+                    <strong>内存 (RAM)：</strong>
+                    <div class="input-inline">
+                        单条价格 <input type="number" class="unit-price" id="ramUnitPrice" value="75" min="0" onchange="calculateTotalPrice()"> 元
+                    </div>
+                    <div class="input-inline">
+                        所需总容量 <input type="number" class="total-capacity" id="ramTotalCapacity" value="32" min="0" onchange="calculateTotalPrice()"> GB
+                    </div>
+                    <div class="input-inline">
+                        单条容量 <input type="number" class="single-capacity" id="ramSingleCapacity" value="16" min="1" onchange="calculateTotalPrice()"> GB
+                    </div>
+                    <span class="calculated-quantity-display" id="ramQuantityDisplay"> (2 条)</span>
                 </li>
-                <li data-name="内存 (16G)" data-unit="元" data-default-price="75" data-type="one-time">
-                    <strong>内存 (RAM - 16GB)：</strong>
-                    <span>16GB DDR3/DDR4 内存，价格约</span>
-                    <input type="number" id="ram16gPrice" value="75" min="0" onchange="calculateTotalPrice()">
-                    <span class="unit">元</span>
-                </li>
-                <li data-name="固态硬盘" data-unit="元" data-default-price="539" data-type="one-time">
+                <li data-name="固态硬盘" data-unit="元" data-default-price="539" data-type="one-time" data-capacity-unit="TB">
                     <strong>固态硬盘 (SSD)：</strong>
-                    <span>2TB NVMe 或 SATA 企业级 SSD，价格约</span>
-                    <input type="number" id="ssdPrice" value="539" min="0" onchange="calculateTotalPrice()">
-                    <span class="unit">元</span>
+                     <div class="input-inline">
+                        单块价格 <input type="number" class="unit-price" id="ssdUnitPrice" value="539" min="0" onchange="calculateTotalPrice()"> 元
+                    </div>
+                    <div class="input-inline">
+                        所需总容量 <input type="number" class="total-capacity" id="ssdTotalCapacity" value="2" min="0" onchange="calculateTotalPrice()"> TB
+                    </div>
+                    <div class="input-inline">
+                        单块容量 <input type="number" class="single-capacity" id="ssdSingleCapacity" value="2" min="1" onchange="calculateTotalPrice()"> TB
+                    </div>
+                    <span class="calculated-quantity-display" id="ssdQuantityDisplay"> (1 块)</span>
                 </li>
-                <li data-name="机械硬盘" data-unit="元" data-default-price="280" data-type="one-time">
+                <li data-name="机械硬盘" data-unit="元" data-default-price="280" data-type="one-time" data-capacity-unit="TB">
                     <strong>机械硬盘 (HDD)：</strong>
-                    <span>根据需求配置 12TB 或更高容量的企业级机械硬盘，价格约</span>
-                    <input type="number" id="hddPrice" value="280" min="0" onchange="calculateTotalPrice()">
-                    <span class="unit">元</span>
-                 </li>
+                    <div class="input-inline">
+                        单块价格 <input type="number" class="unit-price" id="hddUnitPrice" value="280" min="0" onchange="calculateTotalPrice()"> 元
+                    </div>
+                    <div class="input-inline">
+                        所需总容量 <input type="number" class="total-capacity" id="hddTotalCapacity" value="18" min="0" onchange="calculateTotalPrice()"> TB
+                    </div>
+                    <div class="input-inline">
+                        单块容量 <input type="number" class="single-capacity" id="hddSingleCapacity" value="6" min="1" onchange="calculateTotalPrice()"> TB
+                    </div>
+                    <span class="calculated-quantity-display" id="hddQuantityDisplay"> (3 块)</span>
+                </li>
             </ul>
         </div>
 
         <div class="section">
-            <h2>二、硬件价格与自定义</h2>
-            <p>以下是默认的固定硬件清单及其参考价格。这些项无论是否填写推荐配置，都将计入一次性总投入。</p>
-            <table id="hardwareTable">
+            <h2>二、固定硬件清单（仅修改单价）</h2>
+            <p>以下是服务器基础硬件的参考价格。这些项数量固定为1或2个，你只需修改其单价。</p>
+            <table id="fixedHardwareTable">
                 <thead>
                     <tr>
                         <th>硬件名称</th>
@@ -227,49 +248,49 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr data-name="主板" data-default-price="169" data-type="one-time">
+                    <tr data-name="主板" data-default-price="169" data-fixed-quantity="1" data-type="one-time">
                         <td>主板 (RD452x)</td>
-                        <td><input type="number" value="169" min="0" onchange="updateRowPrice(this)"></td>
-                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="169" min="0" onchange="calculateTotalPrice()"></td>
+                        <td class="fixed-quantity-display">1</td>
                         <td class="subtotal">169</td>
                     </tr>
-                    <tr data-name="CPU" data-default-price="50" data-type="one-time">
+                    <tr data-name="CPU" data-default-price="50" data-fixed-quantity="2" data-type="one-time">
                         <td>CPU (E5-2683v3 * 2)</td>
-                        <td><input type="number" value="50" min="0" onchange="updateRowPrice(this)"></td>
-                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
-                        <td class="subtotal">50</td>
+                        <td><input type="number" value="50" min="0" onchange="calculateTotalPrice()"></td>
+                        <td class="fixed-quantity-display">2</td>
+                        <td class="subtotal">100</td>
                     </tr>
-                    <tr data-name="网卡" data-default-price="20" data-type="one-time">
+                    <tr data-name="网卡" data-default-price="20" data-fixed-quantity="1" data-type="one-time">
                         <td>网卡 (2308 OCP)</td>
-                        <td><input type="number" value="20" min="0" onchange="updateRowPrice(this)"></td>
-                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="20" min="0" onchange="calculateTotalPrice()"></td>
+                        <td class="fixed-quantity-display">1</td>
                         <td class="subtotal">20</td>
                     </tr>
-                    <tr data-name="电源" data-default-price="200" data-type="one-time">
+                    <tr data-name="电源" data-default-price="200" data-fixed-quantity="1" data-type="one-time">
                         <td>电源 (二手长城巨龙双路)</td>
-                        <td><input type="number" value="200" min="0" onchange="updateRowPrice(this)"></td>
-                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="200" min="0" onchange="calculateTotalPrice()"></td>
+                        <td class="fixed-quantity-display">1</td>
                         <td class="subtotal">200</td>
                     </tr>
-                    <tr data-name="机箱" data-default-price="50" data-type="one-time">
+                    <tr data-name="机箱" data-default-price="50" data-fixed-quantity="1" data-type="one-time">
                         <td>机箱 (开放式)</td>
-                        <td><input type="number" value="50" min="0" onchange="updateRowPrice(this)"></td>
-                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="50" min="0" onchange="calculateTotalPrice()"></td>
+                        <td class="fixed-quantity-display">1</td>
                         <td class="subtotal">50</td>
                     </tr>
-                    <tr data-name="交换机" data-default-price="430" data-type="one-time">
+                    <tr data-name="交换机" data-default-price="430" data-fixed-quantity="1" data-type="one-time">
                         <td>交换机 (思科4948E)</td>
-                        <td><input type="number" value="430" min="0" onchange="updateRowPrice(this)"></td>
-                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="430" min="0" onchange="calculateTotalPrice()"></td>
+                        <td class="fixed-quantity-display">1</td>
                         <td class="subtotal">430</td>
                     </tr>
-                    <tr data-name="网线" data-default-price="50" data-type="one-time">
+                    <tr data-name="网线" data-default-price="50" data-fixed-quantity="1" data-type="one-time">
                         <td>网线</td>
-                        <td><input type="number" value="50" min="0" onchange="updateRowPrice(this)"></td>
-                        <td><input type="number" value="1" min="1" class="quantity-input" onchange="updateRowPrice(this)"></td>
+                        <td><input type="number" value="50" min="0" onchange="calculateTotalPrice()"></td>
+                        <td class="fixed-quantity-display">1</td>
                         <td class="subtotal">50</td>
                     </tr>
-                    </tbody>
+                </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="3" class="total-price">总计 (一次性投入):</td>
@@ -279,6 +300,7 @@
             </table>
 
             <h3>自定义添加其他硬件</h3>
+            <p>适用于不在上述清单中的其他硬件，请直接填写数量和单价。</p>
             <div id="customHardwareList">
                 </div>
             <div class="input-group">
@@ -305,15 +327,29 @@
 
         <div class="section">
             <h2>三、收益与成本分析</h2>
-            <p>请输入你的预计收益和额外的月度/日度成本，我们将为你计算每月盈亏和回本时间。</p>
+            <p>请输入你的预计带宽收益和额外的月度/日度成本，我们将为你计算每月盈亏和回本时间。</p>
 
             <div class="flex-row input-group">
-                <label for="totalRevenueInput">预计总收益:</label>
+                <label for="bandwidthRevenuePerUnit">每单位带宽收益:</label>
                 <div class="input-wrapper">
-                    <input type="number" id="totalRevenueInput" value="0" min="0" oninput="calculateProfitLoss()" class="revenue-input">
-                    <select id="revenuePeriod" onchange="calculateProfitLoss()">
-                        <option value="monthly">元/月</option>
-                        <option value="daily">元/日</option>
+                    <input type="number" id="bandwidthRevenuePerUnit" value="0" min="0" oninput="calculateProfitLoss()" class="revenue-input">
+                    <select id="bandwidthRevenueRateUnit" onchange="calculateProfitLoss()">
+                        <option value="Gbps_monthly">元/Gbps/月</option>
+                        <option value="Mbps_monthly">元/Mbps/月</option>
+                        <option value="Gbps_daily">元/Gbps/日</option>
+                        <option value="Mbps_daily">元/Mbps/日</option>
+                    </select>
+                </div>
+            </div>
+
+             <div class="flex-row input-group">
+                <label for="actualBandwidth">服务器总带宽:</label>
+                <div class="input-wrapper">
+                    <input type="number" id="actualBandwidth" value="1000" min="0" oninput="calculateProfitLoss()" class="revenue-input">
+                    <select id="actualBandwidthUnit" onchange="calculateProfitLoss()">
+                        <option value="Mbps">Mbps</option>
+                        <option value="Gbps">Gbps</option>
+                    </option>
                     </select>
                 </div>
             </div>
@@ -330,6 +366,9 @@
             </div>
             <p style="font-size: 0.9em; color: #666;">（例如电费、人工费等。程序会将日费用自动转换为月费用）</p>
 
+            <div class="calculation-result" id="calculatedBandwidthRevenue">
+                宽带预计每月收益：0 元
+            </div>
             <div class="calculation-result" id="totalMonthlyRevenueSummary">
                 总预计每月收益：0 元
             </div>
@@ -371,35 +410,59 @@
             costs.oneTime = {};
             costs.monthly = {};
 
-            // 计算推荐配置的成本 (现在也支持值为0)
+            // --- 1. 计算“可修改的配置”中的项目 ---
             document.querySelectorAll('.section:nth-of-type(1) ul li').forEach(item => {
-                const priceInput = item.querySelector('input[type="number"]');
-                const price = parseFloat(priceInput.value) || 0; // 如果为空或无效，则为0
-                const type = item.getAttribute('data-type');
                 const name = item.getAttribute('data-name');
+                const type = item.getAttribute('data-type');
+                let price = 0;
+                let quantity = 1; // 默认数量
 
-                // 旧的宽带速度输入项已移除，这里无需跳过
+                if (name === "宽带月租" || name === "宽带安装费") {
+                    price = parseFloat(item.querySelector('input[type="number"]').value) || 0;
+                    quantity = 1; // 服务类项目数量固定为1
+                } else if (name === "内存" || name === "固态硬盘" || name === "机械硬盘") {
+                    const unitPrice = parseFloat(item.querySelector('.unit-price').value) || 0;
+                    const totalCapacity = parseFloat(item.querySelector('.total-capacity').value) || 0;
+                    const singleCapacity = parseFloat(item.querySelector('.single-capacity').value) || 1; // 单块容量不能为0
+                    
+                    if (totalCapacity > 0 && singleCapacity > 0) {
+                        quantity = Math.ceil(totalCapacity / singleCapacity); // 向上取整
+                    } else {
+                        quantity = 0; // 如果总容量为0，则数量也为0
+                    }
+                    price = unitPrice; // 这里的price是单价，subtotal是总价
+                    
+                    // 更新显示的数量
+                    const quantityDisplaySpan = item.querySelector('.calculated-quantity-display');
+                    if (quantityDisplaySpan) {
+                         let unitText = "";
+                         if (name === "内存") unitText = " 条";
+                         else if (name === "固态硬盘" || name === "机械硬盘") unitText = " 块";
+                         quantityDisplaySpan.textContent = ` (${quantity}${unitText})`;
+                    }
+                }
                 
+                const subtotal = price * quantity; // 计算小计
+
                 if (type === 'one-time') {
-                    costs.oneTime[name] = price;
+                    costs.oneTime[name] = subtotal;
                 } else if (type === 'monthly') {
-                    costs.monthly[name] = price;
+                    costs.monthly[name] = subtotal;
                 }
             });
 
-            // 计算硬件价格表格的成本 (固定投入，无论推荐配置如何)
-            const tableRows = document.querySelectorAll('#hardwareTable tbody tr');
-            tableRows.forEach(row => {
-                const priceInput = row.cells[1].querySelector('input[type="number"]');
-                const quantityInput = row.cells[2].querySelector('input[type="number"]');
+            // --- 2. 计算“固定硬件清单”中的项目 ---
+            const fixedHardwareTableRows = document.querySelectorAll('#fixedHardwareTable tbody tr');
+            fixedHardwareTableRows.forEach(row => {
+                const priceInput = row.querySelector('input[type="number"]');
                 const subtotalCell = row.querySelector('.subtotal');
+                const name = row.getAttribute('data-name');
+                const type = row.getAttribute('data-type');
+                const fixedQuantity = parseInt(row.getAttribute('data-fixed-quantity')) || 0;
 
                 const price = parseFloat(priceInput ? priceInput.value : 0);
-                const quantity = parseInt(quantityInput ? quantityInput.value : 1);
-                const type = row.getAttribute('data-type');
-                const name = row.getAttribute('data-name');
-
-                const subtotal = price * quantity;
+                const subtotal = price * fixedQuantity;
+                
                 if (subtotalCell) {
                     subtotalCell.textContent = subtotal.toFixed(0);
                 }
@@ -411,7 +474,7 @@
                 }
             });
 
-            // 计算自定义硬件的成本
+            // --- 3. 计算“自定义添加其他硬件”中的项目 ---
             document.querySelectorAll('#customHardwareList .custom-hardware-item').forEach(item => {
                 const priceInput = item.querySelector('.custom-price-input');
                 const quantityInput = item.querySelector('.custom-quantity-input');
@@ -421,7 +484,6 @@
                 const price = parseFloat(priceInput.value) || 0;
                 const quantity = parseInt(quantityInput.value) || 1;
                 const type = typeSelect.value;
-                // 获取名称，去除可能的“ (移除)”后缀
                 const name = nameSpan.textContent.replace(/\s*\(移除\)$/, '').split('(')[0].trim();
 
                 const subtotal = price * quantity;
@@ -442,15 +504,9 @@
             calculateProfitLoss(); // 重新计算总价后，也重新计算盈亏和回本时间
         }
 
-        // 用于更新硬件表格中单行价格和小计的函数
+        // updateRowPrice 函数现在仅调用 calculateTotalPrice，因为所有计算逻辑都集中在那里
         function updateRowPrice(inputElement) {
-            const row = inputElement.closest('tr');
-            const price = parseFloat(row.cells[1].querySelector('input[type="number"]').value) || 0;
-            const quantity = parseInt(row.cells[2].querySelector('input[type="number"]').value) || 1;
-
-            const subtotal = price * quantity;
-            row.querySelector('.subtotal').textContent = subtotal.toFixed(0);
-            calculateTotalPrice(); // 价格改变后重新计算总价
+             calculateTotalPrice(); 
         }
 
         function addCustomHardware() {
@@ -509,35 +565,55 @@
         function calculateProfitLoss() {
             const totalOneTimeCost = parseFloat(document.getElementById('totalOneTimeCost').textContent) || 0;
 
-            // 预计总收益
-            const totalRevenueInput = parseFloat(document.getElementById('totalRevenueInput').value) || 0;
-            const revenuePeriod = document.getElementById('revenuePeriod').value;
-            let totalMonthlyRevenue = totalRevenueInput;
-            if (revenuePeriod === 'daily') {
-                totalMonthlyRevenue = totalRevenueInput * DAYS_IN_MONTH; // 日收益转月收益
+            // --- 收益计算 ---
+            const bandwidthRevenuePerUnit = parseFloat(document.getElementById('bandwidthRevenuePerUnit').value) || 0;
+            const bandwidthRevenueRateUnit = document.getElementById('bandwidthRevenueRateUnit').value; // e.g., "Gbps_monthly", "Mbps_daily"
+            const actualBandwidth = parseFloat(document.getElementById('actualBandwidth').value) || 0;
+            const actualBandwidthUnit = document.getElementById('actualBandwidthUnit').value; // "Mbps" or "Gbps"
+
+            let calculatedBandwidthRevenueMonthly = 0;
+
+            // 1. 将服务器总带宽转换为统一的 Mbps
+            let totalActualMbps = actualBandwidth;
+            if (actualBandwidthUnit === 'Gbps') {
+                totalActualMbps = actualBandwidth * 1000;
             }
-            document.getElementById('totalMonthlyRevenueSummary').textContent = `总预计每月收益：${totalMonthlyRevenue.toFixed(0)} 元`;
 
+            // 2. 根据收益率单位和实际带宽计算出每月总收益
+            // 首先将收益率的基础单位统一到 Mbps
+            let revenueRatePerMbps = bandwidthRevenuePerUnit; // 默认按输入值
+            if (bandwidthRevenueRateUnit.includes('Gbps')) {
+                revenueRatePerMbps = bandwidthRevenuePerUnit / 1000; // 如果输入是元/Gbps，则转换为元/Mbps
+            }
 
-            // 其他每月成本 (用户输入)
+            calculatedBandwidthRevenueMonthly = revenueRatePerMbps * totalActualMbps;
+
+            // 3. 处理日/月转换
+            if (bandwidthRevenueRateUnit.includes('daily')) {
+                calculatedBandwidthRevenueMonthly = calculatedBandwidthRevenueMonthly * DAYS_IN_MONTH;
+            }
+
+            document.getElementById('calculatedBandwidthRevenue').textContent = `宽带预计每月收益：${calculatedBandwidthRevenueMonthly.toFixed(0)} 元`;
+            document.getElementById('totalMonthlyRevenueSummary').textContent = `总预计每月收益：${calculatedBandwidthRevenueMonthly.toFixed(0)} 元`; // 目前只有宽带收益
+
+            // --- 成本计算 ---
             const additionalMonthlyCostInput = parseFloat(document.getElementById('additionalMonthlyCost').value) || 0;
             const additionalCostPeriod = document.getElementById('additionalCostPeriod').value;
             let calculatedAdditionalCost = additionalMonthlyCostInput;
             if (additionalCostPeriod === 'daily') {
-                calculatedAdditionalCost = additionalMonthlyCostInput * DAYS_IN_MONTH; // 日成本转月成本
+                calculatedAdditionalCost = additionalMonthlyCostInput * DAYS_IN_MONTH;
             }
             document.getElementById('calculatedAdditionalCost').textContent = `其他预计每月成本：${calculatedAdditionalCost.toFixed(0)} 元`;
 
-            // 所有“每月固定成本”项 (来自推荐配置和自定义硬件)
             let totalMonthlyRecurringFromConfig = 0;
             for (const key in costs.monthly) {
                 totalMonthlyRecurringFromConfig += costs.monthly[key];
             }
-            document.getElementById('totalMonthlyCostSummary').textContent = `总预计每月固定成本（含宽带月租）：${(totalMonthlyRecurringFromConfig + calculatedAdditionalCost).toFixed(0)} 元`;
+            const totalMonthlyExpenditure = totalMonthlyRecurringFromConfig + calculatedAdditionalCost;
+            document.getElementById('totalMonthlyCostSummary').textContent = `总预计每月固定成本（含宽带月租）：${totalMonthlyExpenditure.toFixed(0)} 元`;
 
 
-            const totalMonthlyExpenditure = totalMonthlyRecurringFromConfig + calculatedAdditionalCost; // 总月支出 = 配置中每月项 + 用户额外每月成本
-            const monthlyProfitLoss = totalMonthlyRevenue - totalMonthlyExpenditure; // 收益减去成本
+            const monthlyProfitLoss = calculatedBandwidthRevenueMonthly - totalMonthlyExpenditure;
 
             const profitLossResultDiv = document.getElementById('profitLossResult');
             profitLossResultDiv.textContent = `每月盈亏：${monthlyProfitLoss.toFixed(0)} 元`;
