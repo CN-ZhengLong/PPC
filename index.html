@@ -19,7 +19,7 @@
             background-color: #ffffff;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 6px 15px rgba[0, 0, 0, 0.1];
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
         h1, h2, h3 {
             color: #2c3e50;
@@ -206,7 +206,7 @@
                         单条月租 <input type="number" class="unit-price" id="broadbandPrice" value="100" min="0" onchange="calculateTotalPrice()"> 元/月
                     </div>
                     <div class="input-inline">
-                        单条速度 <input type="number" class="broadband-speed" id="singleBroadbandSpeed" value="100" min="0" onchange="calculateTotalPrice()">
+                        单条速度 <input type="number" class="broadband-speed" id="singleBroadbandSpeed" value="300" min="0" onchange="calculateTotalPrice()">
                         <select class="speed-unit" id="singleBroadbandSpeedUnit" onchange="calculateTotalPrice()">
                             <option value="Mbps">Mbps</option>
                             <option value="Gbps">Gbps</option>
@@ -240,7 +240,7 @@
                         单块价格 <input type="number" class="unit-price" id="ssdUnitPrice" value="539" min="0" onchange="calculateTotalPrice()"> 元
                     </div>
                     <div class="input-inline">
-                        所需总容量 <input type="number" class="total-capacity" id="ssdTotalCapacity" value="2" min="0" onchange="calculateTotalPrice()"> TB
+                        所需总容量 <input type="number" class="total-capacity" id="ssdTotalCapacity" value="7.5" min="0" onchange="calculateTotalPrice()"> TB
                     </div>
                     <div class="input-inline">
                         单块容量 <input type="number" class="single-capacity" id="ssdSingleCapacity" value="2" min="1" onchange="calculateTotalPrice()"> TB
@@ -253,7 +253,7 @@
                         单块价格 <input type="number" class="unit-price" id="hddUnitPrice" value="280" min="0" onchange="calculateTotalPrice()"> 元
                     </div>
                     <div class="input-inline">
-                        所需总容量 <input type="number" class="total-capacity" id="hddTotalCapacity" value="18" min="0" onchange="calculateTotalPrice()"> TB
+                        所需总容量 <input type="number" class="total-capacity" id="hddTotalCapacity" value="28" min="0" onchange="calculateTotalPrice()"> TB
                     </div>
                     <div class="input-inline">
                         单块容量 <input type="number" class="single-capacity" id="hddSingleCapacity" value="6" min="1" onchange="calculateTotalPrice()"> TB
@@ -360,10 +360,10 @@
             <div class="flex-row input-group">
                 <label for="actualBandwidth">服务器总带宽:</label>
                 <div class="input-wrapper">
-                    <input type="number" id="actualBandwidth" value="1000" min="0" oninput="calculateTotalPrice(); calculateProfitLoss();" class="revenue-input">
+                    <input type="number" id="actualBandwidth" value="5" min="0" oninput="calculateTotalPrice(); calculateProfitLoss();" class="revenue-input">
                     <select id="actualBandwidthUnit" onchange="calculateTotalPrice(); calculateProfitLoss();">
                         <option value="Mbps">Mbps</option>
-                        <option value="Gbps">Gbps</option>
+                        <option value="Gbps" selected>Gbps</option>
                     </select>
                 </div>
             </div>
