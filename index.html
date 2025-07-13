@@ -179,19 +179,28 @@
 
         <div class="section">
             <h2>一、可修改的配置（宽带、内存、硬盘）</h2>
-            <p>请根据你的需求调整以下配置的价格和容量。系统将自动计算所需数量并计入总投入。</p>
+            <p>请根据你的需求调整以下配置的价格和容量/速度。系统将自动计算所需数量并计入总投入。</p>
             <ul>
-                <li data-name="宽带月租" data-unit="元/月" data-default-price="100" data-type="monthly">
+                <li data-name="宽带月租" data-type="monthly">
                     <strong>宽带月租：</strong>
-                    <span>500Mbps 上行/500Mbps 下行 或更高，月租约</span>
-                    <input type="number" id="broadbandPrice" value="100" min="0" onchange="calculateTotalPrice()">
-                    <span class="unit">元/月</span>
+                    <div class="input-inline">
+                        单条月租 <input type="number" class="unit-price" id="broadbandPrice" value="100" min="0" onchange="calculateTotalPrice()"> 元/月
+                    </div>
+                    <div class="input-inline">
+                        单条速度 <input type="number" class="broadband-speed" id="singleBroadbandSpeed" value="100" min="0" onchange="calculateTotalPrice()">
+                        <select class="speed-unit" id="singleBroadbandSpeedUnit" onchange="calculateTotalPrice()">
+                            <option value="Mbps">Mbps</option>
+                            <option value="Gbps">Gbps</option>
+                        </select>
+                    </div>
+                    <span class="calculated-quantity-display" id="broadbandQuantityDisplay"> (1 条)</span>
                 </li>
-                <li data-name="宽带安装费" data-unit="元" data-default-price="100" data-type="one-time">
+                <li data-name="宽带安装费" data-type="one-time">
                     <strong>宽带安装费：</strong>
-                    <span>一次性安装费用约</span>
-                    <input type="number" id="broadbandInstallFee" value="100" min="0" onchange="calculateTotalPrice()">
-                    <span class="unit">元</span>
+                    <div class="input-inline">
+                        单条安装费 <input type="number" class="unit-price" id="broadbandInstallFee" value="100" min="0" onchange="calculateTotalPrice()"> 元
+                    </div>
+                    <span class="calculated-quantity-display" id="broadbandInstallFeeQuantityDisplay"> (1 条)</span>
                 </li>
                 <li data-name="内存" data-unit="元" data-default-price="75" data-type="one-time" data-capacity-unit="GB">
                     <strong>内存 (RAM)：</strong>
@@ -345,11 +354,10 @@
              <div class="flex-row input-group">
                 <label for="actualBandwidth">服务器总带宽:</label>
                 <div class="input-wrapper">
-                    <input type="number" id="actualBandwidth" value="1000" min="0" oninput="calculateProfitLoss()" class="revenue-input">
-                    <select id="actualBandwidthUnit" onchange="calculateProfitLoss()">
+                    <input type="number" id="actualBandwidth" value="1000" min="0" oninput="calculateTotalPrice(); calculateProfitLoss();" class="revenue-input">
+                    <select id="actualBandwidthUnit" onchange="calculateTotalPrice(); calculateProfitLoss();">
                         <option value="Mbps">Mbps</option>
                         <option value="Gbps">Gbps</option>
-                    </option>
                     </select>
                 </div>
             </div>
@@ -410,6 +418,14 @@
             costs.oneTime = {};
             costs.monthly = {};
 
+            // 获取服务器总带宽（用于宽带数量计算）
+            const actualBandwidth = parseFloat(document.getElementById('actualBandwidth').value) || 0;
+            const actualBandwidthUnit = document.getElementById('actualBandwidthUnit').value;
+            let actualBandwidthMbps = actualBandwidth;
+            if (actualBandwidthUnit === 'Gbps') {
+                actualBandwidthMbps = actualBandwidth * 1000;
+            }
+
             // --- 1. 计算“可修改的配置”中的项目 ---
             document.querySelectorAll('.section:nth-of-type(1) ul li').forEach(item => {
                 const name = item.getAttribute('data-name');
@@ -418,8 +434,33 @@
                 let quantity = 1; // 默认数量
 
                 if (name === "宽带月租" || name === "宽带安装费") {
-                    price = parseFloat(item.querySelector('input[type="number"]').value) || 0;
-                    quantity = 1; // 服务类项目数量固定为1
+                    const unitPriceInput = item.querySelector('.unit-price');
+                    price = parseFloat(unitPriceInput ? unitPriceInput.value : 0);
+
+                    // 宽带数量的计算逻辑
+                    if (name === "宽带月租") {
+                        const singleBroadbandSpeed = parseFloat(document.getElementById('singleBroadbandSpeed').value) || 0;
+                        const singleBroadbandSpeedUnit = document.getElementById('singleBroadbandSpeedUnit').value;
+                        
+                        let singleBroadbandSpeedMbps = singleBroadbandSpeed;
+                        if (singleBroadbandSpeedUnit === 'Gbps') {
+                            singleBroadbandSpeedMbps = singleBroadbandSpeed * 1000;
+                        }
+
+                        if (actualBandwidthMbps > 0 && singleBroadbandSpeedMbps > 0) {
+                            quantity = Math.ceil(actualBandwidthMbps / singleBroadbandSpeedMbps);
+                        } else {
+                            quantity = 0;
+                        }
+                         document.getElementById('broadbandQuantityDisplay').textContent = ` (${quantity} 条)`;
+                         //宽带安装费的数量也和宽带月租数量相同
+                         document.getElementById('broadbandInstallFeeQuantityDisplay').textContent = ` (${quantity} 条)`;
+                    } else if (name === "宽带安装费") {
+                         // 宽带安装费的数量和宽带月租的数量保持一致，从宽带月租的计算中获取
+                         const broadbandMonthlyLi = document.querySelector('li[data-name="宽带月租"]');
+                         const broadbandQuantityText = broadbandMonthlyLi.querySelector('.calculated-quantity-display').textContent;
+                         quantity = parseInt(broadbandQuantityText.match(/\d+/)[0]) || 0;
+                    }
                 } else if (name === "内存" || name === "固态硬盘" || name === "机械硬盘") {
                     const unitPrice = parseFloat(item.querySelector('.unit-price').value) || 0;
                     const totalCapacity = parseFloat(item.querySelector('.total-capacity').value) || 0;
