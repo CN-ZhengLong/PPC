@@ -12,7 +12,7 @@
             color: #333;
         }
         .container {
-            max-width: 600px;
+            max-width: 700px; /* 稍微加宽以容纳更多内容 */
             margin: 0 auto;
             background-color: #fff;
             padding: 30px;
@@ -45,6 +45,47 @@
             width: 100px; /* Width for unit select */
             margin-left: 5px;
         }
+        .input-group .half-width {
+            width: calc(50% - 10px); /* For price input and unit select */
+        }
+        .input-group .select-group {
+            width: calc(50% - 10px);
+            display: inline-block;
+            vertical-align: middle;
+        }
+        /* 硬件成本部分的样式 */
+        .hardware-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .hardware-item label {
+            flex: 2; /* 标签占据更多空间 */
+            margin-bottom: 0; /* 移除默认的下边距 */
+            font-weight: normal; /* 硬件标签不需要粗体 */
+        }
+        .hardware-item input[type="number"] {
+            flex: 1; /* 数量输入框 */
+            width: auto; /* 自动宽度 */
+            margin-left: 10px;
+            text-align: center;
+        }
+        .hardware-item .price-display {
+            flex: 1; /* 价格显示 */
+            text-align: right;
+            margin-left: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        .total-hardware-cost {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: right;
+        }
+
         button {
             display: block;
             width: 100%;
@@ -73,6 +114,9 @@
             color: #28a745;
             font-size: 1.2em;
         }
+        .results .cost-display {
+            color: #dc3545; /* 成本显示为红色 */
+        }
         .disclaimer {
             font-size: 0.9em;
             color: #666;
@@ -84,11 +128,11 @@
 <body>
     <div class="container">
         <h1>PCDN 收益计算器</h1>
-        <p>输入您的 PCDN 贡献数据，即可估算潜在收益。</p>
+        <p>输入您的 PCDN 带宽贡献数据和硬件配置，即可估算潜在收益和成本。</p>
 
         <hr>
 
-        <h2>输入数据</h2>
+        <h2>带宽收益估算</h2>
 
         <div class="input-group">
             <label for="bandwidth">贡献带宽:</label>
@@ -101,124 +145,191 @@
         </div>
 
         <div class="input-group">
-            <label for="storage">贡献存储空间:</label>
-            <input type="number" id="storage" placeholder="例如：1" step="0.1">
-            <select id="storageUnit">
-                <option value="GB">GB</option>
-                <option value="TB">TB</option>
-            </select>
-            <p style="font-size: 0.9em; color: #777;">您用于 PCDN 存储的硬盘空间。</p>
-        </div>
-
-        <div class="input-group">
-            <label for="onlineHours">平均在线时长 (小时/天):</label>
-            <input type="number" id="onlineHours" placeholder="例如：20" step="0.1">
-            <p style="font-size: 0.9em; color: #777;">您的设备每天平均在线时长。</p>
-        </div>
-
-        <div class="input-group">
-            <label for="bandwidthPrice">带宽单价 (元/Mbps/月):</label>
-            <input type="number" id="bandwidthPrice" placeholder="例如：0.05" step="0.001">
+            <label for="price">带宽单价:</label>
+            <input type="number" id="price" placeholder="例如：0.05" step="0.001" class="half-width">
+            <div class="select-group">
+                <select id="priceBandwidthUnit" style="width: calc(50% - 5px);">
+                    <option value="Mbps">Mbps</option>
+                    <option value="Gbps">Gbps</option>
+                </select>
+                <select id="priceTimeUnit" style="width: calc(50% - 5px); margin-left: 5px;">
+                    <option value="month">/月</option>
+                    <option value="day">/天</option>
+                </select>
+            </div>
             <p style="font-size: 0.9em; color: #777;">根据 PCDN 平台公布的计费标准。</p>
         </div>
 
         <div class="input-group">
-            <label for="storagePrice">存储单价 (元/TB/月):</label>
-            <input type="number" id="storagePrice" placeholder="例如：5" step="0.1">
-            <p style="font-size: 0.9em; color: #777;">根据 PCDN 平台公布的计费标准。</p>
+            <label>平均在线时长 (小时/天):</label>
+            <p style="font-size: 1.1em; font-weight: bold; color: #0056b3;">24 小时 (默认值)</p>
+            <p style="font-size: 0.9em; color: #777;">本计算器默认设备每天在线 24 小时。</p>
         </div>
-
-        <div class="input-group">
-            <label for="platformFee">平台抽成比例 (%):</label>
-            <input type="number" id="platformFee" placeholder="例如：20" step="0.1" value="0">
-            <p style="font-size: 0.9em; color: #777;">PCDN 平台可能收取的服务费比例。</p>
-        </div>
-
-        <div class="input-group">
-            <label for="electricityCost">电费成本 (元/度):</label>
-            <input type="number" id="electricityCost" placeholder="例如：0.6" step="0.01" value="0">
-            <p style="font-size: 0.9em; color: #777;">您的地区电费价格，用于估算运营成本。</p>
-        </div>
-
-        <div class="input-group">
-            <label for="devicePower">设备平均功耗 (瓦):</label>
-            <input type="number" id="devicePower" placeholder="例如：10" step="0.1" value="0">
-            <p style="font-size: 0.9em; color: #777;">您的 PCDN 设备平均功耗。</p>
-        </div>
-
-        <button onclick="calculatePCDNRevenue()">计算收益</button>
 
         <hr>
 
-        <h2>计算结果</h2>
+        <h2>硬件成本估算</h2>
+        <p style="font-size: 0.9em; color: #777; margin-bottom: 15px;">输入您拥有的硬件数量，将根据默认单价计算总成本。</p>
+
+        <div class="hardware-item">
+            <label>交换机 (思科4948e):</label>
+            <input type="number" id="switchQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="switchPrice">单价: 430 元</span>
+        </div>
+        <div class="hardware-item">
+            <label>SAS 6T 硬盘:</label>
+            <input type="number" id="sasHddQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="sasHddPrice">单价: 279 元</span>
+        </div>
+        <div class="hardware-item">
+            <label>HK4R 2T 固态硬盘:</label>
+            <input type="number" id="ssdQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="ssdPrice">单价: 539 元</span>
+        </div>
+        <div class="hardware-item">
+            <label>主板 (RD452X):</label>
+            <input type="number" id="motherboardQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="motherboardPrice">单价: 176 元</span>
+        </div>
+        <div class="hardware-item">
+            <label>CPU (E5 2683V3):</label>
+            <input type="number" id="cpuQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="cpuPrice">单价: 23 元</span>
+        </div>
+        <div class="hardware-item">
+            <label>内存 (DDR4 16G):</label>
+            <input type="number" id="ramQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="ramPrice">单价: 75 元</span>
+        </div>
+        <div class="hardware-item">
+            <label>网线:</label>
+            <input type="number" id="ethernetCableQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="ethernetCablePrice">单价: 10 元</span>
+        </div>
+        <div class="hardware-item">
+            <label>OCP 网卡:</label>
+            <input type="number" id="ocpNicQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="ocpNicPrice">单价: 13 元</span>
+        </div>
+        <div class="hardware-item">
+            <label>机箱:</label>
+            <input type="number" id="caseQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="casePrice">单价: 50 元</span>
+        </div>
+        <div class="hardware-item">
+            <label>电源:</label>
+            <input type="number" id="psuQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="psuPrice">单价: 200 元</span>
+        </div>
+        <div class="hardware-item">
+            <label>硬盘笼:</label>
+            <input type="number" id="hddCageQuantity" value="0" min="0" oninput="calculateHardwareCost()">
+            <span class="price-display" id="hddCagePrice">单价: 80 元</span>
+        </div>
+
+        <div class="total-hardware-cost">
+            总硬件成本: <strong class="cost-display" id="totalHardwareCost">0.00 元</strong>
+        </div>
+
+        <button onclick="calculatePCDNRevenueAndCost()">计算总览</button>
+
+        <hr>
+
+        <h2>计算结果总览</h2>
         <div class="results">
-            <p>月度预估净收益: <strong><span id="monthlyRevenue">0.00 元</span></strong></p>
-            <p>年度预估净收益: <strong><span id="annualRevenue">0.00 元</span></strong></p>
-            <p>月度预估电费成本: <strong><span id="monthlyElectricityCost">未计算</span></strong></p>
+            <p>月度预估收益: <strong><span id="finalMonthlyRevenue">0.00 元</span></strong></p>
+            <p>年度预估收益: <strong><span id="finalAnnualRevenue">0.00 元</span></strong></p>
+            <p>总硬件投入成本: <strong class="cost-display"><span id="finalHardwareCost">0.00 元</span></strong></p>
+            <p style="font-size: 0.9em; color: #777;">（此为一次性投入成本，未计入月度或年度净收益中）</p>
         </div>
 
         <p class="disclaimer">
-            以上结果为估算值，实际收益可能因 PCDN 平台策略、网络波动、资源利用率、设备稳定性、用户需求等因素有所差异。请以 PCDN 平台结算为准。
+            以上结果为估算值，实际收益和成本可能因 PCDN 平台策略、网络波动、资源利用率、硬件市场价格波动等因素有所差异。请以 PCDN 平台结算和实际采购价格为准。
         </p>
     </div>
 
     <script>
-        // PCDN 收益计算函数
-        function calculatePCDNRevenue() {
+        // 硬件默认单价
+        const HARDWARE_PRICES = {
+            switch: 430,
+            sasHdd: 279,
+            ssd: 539,
+            motherboard: 176,
+            cpu: 23,
+            ram: 75,
+            ethernetCable: 10,
+            ocpNic: 13,
+            case: 50,
+            psu: 200,
+            hddCage: 80
+        };
+
+        // 绑定输入框的事件，实时计算硬件成本
+        document.addEventListener('DOMContentLoaded', (event) => {
+            for (const key in HARDWARE_PRICES) {
+                const inputElement = document.getElementById(`${key}Quantity`);
+                if (inputElement) {
+                    inputElement.addEventListener('input', calculateHardwareCost);
+                }
+            }
+            // 页面加载时先计算一次初始成本
+            calculateHardwareCost();
+        });
+
+        // 独立计算硬件总成本的函数
+        function calculateHardwareCost() {
+            let totalCost = 0;
+            for (const key in HARDWARE_PRICES) {
+                const quantityInput = document.getElementById(`${key}Quantity`);
+                const quantity = parseInt(quantityInput.value) || 0; // 获取数量，如果为空或非数字则为0
+                totalCost += quantity * HARDWARE_PRICES[key];
+            }
+            document.getElementById('totalHardwareCost').innerText = totalCost.toFixed(2) + " 元";
+            return totalCost;
+        }
+
+        // 综合计算收益和成本的函数
+        function calculatePCDNRevenueAndCost() {
+            // --- 收益计算部分 ---
             const bandwidth = parseFloat(document.getElementById('bandwidth').value);
             const bandwidthUnit = document.getElementById('bandwidthUnit').value; // 'Mbps' or 'Gbps'
-            const storage = parseFloat(document.getElementById('storage').value);
-            const storageUnit = document.getElementById('storageUnit').value; // 'GB' or 'TB'
-            const onlineHours = parseFloat(document.getElementById('onlineHours').value);
-            const bandwidthPrice = parseFloat(document.getElementById('bandwidthPrice').value); // 元/Mbps/月
-            const storagePrice = parseFloat(document.getElementById('storagePrice').value);   // 元/TB/月
-            const platformFee = parseFloat(document.getElementById('platformFee').value || 0); // 平台抽成比例, 默认为0
-            const electricityCostPerKWH = parseFloat(document.getElementById('electricityCost').value || 0); // 元/度
-            const devicePowerConsumption = parseFloat(document.getElementById('devicePower').value || 0); // 瓦
+            const price = parseFloat(document.getElementById('price').value);
+            const priceBandwidthUnit = document.getElementById('priceBandwidthUnit').value; // 'Mbps' or 'Gbps'
+            const priceTimeUnit = document.getElementById('priceTimeUnit').value; // 'month' or 'day'
 
             // 输入验证
-            if (isNaN(bandwidth) || isNaN(storage) || isNaN(onlineHours) || isNaN(bandwidthPrice) || isNaN(storagePrice)) {
-                alert("请确保所有必填项都已正确填写数字！");
+            if (isNaN(bandwidth) || isNaN(price)) {
+                alert("请确保 '贡献带宽' 和 '带宽单价' 都已正确填写数字！");
                 return;
             }
 
-            let actualBandwidth = bandwidth;
+            let actualBandwidthMbps = bandwidth;
             if (bandwidthUnit === 'Gbps') {
-                actualBandwidth = bandwidth * 1024; // Gbps 转换为 Mbps
+                actualBandwidthMbps = bandwidth * 1024; // Gbps 转换为 Mbps
             }
 
-            let actualStorage = storage;
-            if (storageUnit === 'GB') {
-                actualStorage = storage / 1024; // GB 转换为 TB
+            let actualPricePerMbpsPerMonth = price;
+            // 将单价统一转换为 元/Mbps/月
+            if (priceBandwidthUnit === 'Gbps') {
+                actualPricePerMbpsPerMonth = price / 1024; // Gbps 单价转换为 Mbps 单价
+            }
+            if (priceTimeUnit === 'day') {
+                actualPricePerMbpsPerMonth = actualPricePerMbpsPerMonth * 30; // 天单价转换为月单价（按30天计算）
             }
 
-            // 在线时长比例 (假设一个月30天，每天24小时)
-            const onlineRatio = (onlineHours / 24);
+            // 平均在线时长固定为 24 小时，即在线比例为 1
+            const onlineRatio = 1;
 
-            // 计算总电费 (月度)
-            // 功耗 (瓦) / 1000 = 千瓦 (KW)
-            // 千瓦 * 小时/天 * 30天 = 千瓦时 (度)
-            // 千瓦时 * 每度电费 = 月度电费
-            const monthlyElectricityCost = (devicePowerConsumption / 1000) * onlineHours * 30 * electricityCostPerKWH;
+            // 估算月度总收益
+            const estimatedMonthlyRevenue = actualBandwidthMbps * actualPricePerMbpsPerMonth * onlineRatio;
 
+            // --- 成本计算部分 ---
+            const totalHardwareCost = calculateHardwareCost(); // 调用之前定义的硬件成本计算函数
 
-            // 估算月度总收益 (未扣除平台抽成和电费)
-            const estimatedGrossRevenue = (actualBandwidth * bandwidthPrice * onlineRatio) + (actualStorage * storagePrice * onlineRatio);
-
-            // 扣除平台抽成
-            const revenueAfterPlatformFee = estimatedGrossRevenue * (1 - (platformFee / 100));
-
-            // 计算月度净收益
-            const estimatedNetRevenue = revenueAfterPlatformFee - monthlyElectricityCost;
-
-            // 更新页面显示
-            document.getElementById('monthlyRevenue').innerText = estimatedNetRevenue.toFixed(2) + " 元";
-            document.getElementById('annualRevenue').innerText = (estimatedNetRevenue * 12).toFixed(2) + " 元";
-            if (electricityCostPerKWH > 0 && devicePowerConsumption > 0) {
-                document.getElementById('monthlyElectricityCost').innerText = monthlyElectricityCost.toFixed(2) + " 元";
-            } else {
-                document.getElementById('monthlyElectricityCost').innerText = "未计算";
-            }
+            // --- 更新页面显示 ---
+            document.getElementById('finalMonthlyRevenue').innerText = estimatedMonthlyRevenue.toFixed(2) + " 元";
+            document.getElementById('finalAnnualRevenue').innerText = (estimatedMonthlyRevenue * 12).toFixed(2) + " 元";
+            document.getElementById('finalHardwareCost').innerText = totalHardwareCost.toFixed(2) + " 元";
         }
     </script>
 </body>
