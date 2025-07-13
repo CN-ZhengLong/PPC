@@ -153,6 +153,18 @@
             background-color: #ffeaea;
             border-left: 5px solid #dc3545;
         }
+        .flex-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap; /* 允许换行 */
+        }
+        .flex-row .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
     </style>
 </head>
 <body>
@@ -164,7 +176,7 @@
             <p>以下是一些搭建服务器的推荐配置，你可以根据需求调整价格和规格。未填写的项将按0元计算。</p>
             <ul>
                 <li data-name="宽带月租" data-unit="元/月" data-default-price="100" data-type="monthly">
-                    <strong>宽带速度：</strong>
+                    <strong>宽带月租：</strong>
                     <span>500Mbps 上行/500Mbps 下行 或更高，月租约</span>
                     <input type="number" id="broadbandPrice" value="100" min="0" onchange="calculateTotalPrice()">
                     <span class="unit">元/月</span>
@@ -176,13 +188,13 @@
                     <span class="unit">元</span>
                 </li>
                 <li data-name="内存 (32G)" data-unit="元" data-default-price="300" data-type="one-time">
-                    <strong>内存 (RAM - 例如 32GB)：</strong>
+                    <strong>内存 (RAM - 32GB)：</strong>
                     <span>至少 32GB DDR3/DDR4 ECC 内存，价格约</span>
                     <input type="number" id="ram32gPrice" value="300" min="0" onchange="calculateTotalPrice()">
                     <span class="unit">元</span>
                 </li>
                 <li data-name="内存 (16G)" data-unit="元" data-default-price="75" data-type="one-time">
-                    <strong>内存 (RAM - 例如 16GB)：</strong>
+                    <strong>内存 (RAM - 16GB)：</strong>
                     <span>16GB DDR3/DDR4 内存，价格约</span>
                     <input type="number" id="ram16gPrice" value="75" min="0" onchange="calculateTotalPrice()">
                     <span class="unit">元</span>
@@ -198,7 +210,7 @@
                     <span>根据需求配置 12TB 或更高容量的企业级机械硬盘，价格约</span>
                     <input type="number" id="hddPrice" value="280" min="0" onchange="calculateTotalPrice()">
                     <span class="unit">元</span>
-                </li>
+                 </li>
             </ul>
         </div>
 
@@ -293,14 +305,39 @@
 
         <div class="section">
             <h2>三、收益与成本分析</h2>
-            <p>请输入你的预计月收益和额外的月成本，我们将为你计算每月盈亏和回本时间。</p>
-            <div class="input-group">
-                <label for="monthlyRevenue">预计每月收益 (元):</label>
-                <input type="number" id="monthlyRevenue" class="revenue-input" value="0" min="0" oninput="calculateProfitLoss()">
+            <p>请输入你的预计收益和额外的月度/日度成本，我们将为你计算每月盈亏和回本时间。</p>
+
+            <div class="flex-row input-group">
+                <label for="totalRevenueInput">预计总收益:</label>
+                <div class="input-wrapper">
+                    <input type="number" id="totalRevenueInput" value="0" min="0" oninput="calculateProfitLoss()" class="revenue-input">
+                    <select id="revenuePeriod" onchange="calculateProfitLoss()">
+                        <option value="monthly">元/月</option>
+                        <option value="daily">元/日</option>
+                    </select>
+                </div>
             </div>
-            <div class="input-group">
-                <label for="additionalMonthlyCost">其他每月成本 (元, 例如电费):</label>
-                <input type="number" id="additionalMonthlyCost" class="cost-input" value="0" min="0" oninput="calculateProfitLoss()">
+
+            <div class="flex-row input-group">
+                <label for="additionalMonthlyCost">其他月度/日度成本:</label>
+                <div class="input-wrapper">
+                    <input type="number" id="additionalMonthlyCost" class="cost-input" value="0" min="0" oninput="calculateProfitLoss()">
+                    <select id="additionalCostPeriod" onchange="calculateProfitLoss()">
+                        <option value="monthly">元/月</option>
+                        <option value="daily">元/日</option>
+                    </select>
+                </div>
+            </div>
+            <p style="font-size: 0.9em; color: #666;">（例如电费、人工费等。程序会将日费用自动转换为月费用）</p>
+
+            <div class="calculation-result" id="totalMonthlyRevenueSummary">
+                总预计每月收益：0 元
+            </div>
+            <div class="calculation-result" id="calculatedAdditionalCost">
+                其他预计每月成本：0 元
+            </div>
+            <div class="calculation-result" id="totalMonthlyCostSummary">
+                总预计每月固定成本（含宽带月租）：0 元
             </div>
             <div class="calculation-result" id="profitLossResult">
                 每月盈亏：请填写上方数据进行计算。
@@ -324,9 +361,11 @@
             monthly: {}
         };
 
+        // 定义一个每月平均天数，用于日/月转换
+        const DAYS_IN_MONTH = 30.44; // 365.25 / 12
+
         function calculateTotalPrice() {
             let totalOneTime = 0;
-            let totalMonthlyRecurring = 0;
 
             // 清空之前的成本数据，重新汇总
             costs.oneTime = {};
@@ -339,6 +378,8 @@
                 const type = item.getAttribute('data-type');
                 const name = item.getAttribute('data-name');
 
+                // 旧的宽带速度输入项已移除，这里无需跳过
+                
                 if (type === 'one-time') {
                     costs.oneTime[name] = price;
                 } else if (type === 'monthly') {
@@ -392,12 +433,9 @@
                 }
             });
 
-            // 汇总一次性投入和每月经常性成本
+            // 汇总一次性投入
             for (const key in costs.oneTime) {
                 totalOneTime += costs.oneTime[key];
-            }
-            for (const key in costs.monthly) {
-                totalMonthlyRecurring += costs.monthly[key];
             }
 
             document.getElementById('totalOneTimeCost').textContent = totalOneTime.toFixed(0);
@@ -470,16 +508,36 @@
 
         function calculateProfitLoss() {
             const totalOneTimeCost = parseFloat(document.getElementById('totalOneTimeCost').textContent) || 0;
-            const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue').value) || 0;
-            const additionalMonthlyCost = parseFloat(document.getElementById('additionalMonthlyCost').value) || 0;
 
-            let totalMonthlyRecurringCost = 0;
-            for (const key in costs.monthly) {
-                totalMonthlyRecurringCost += costs.monthly[key];
+            // 预计总收益
+            const totalRevenueInput = parseFloat(document.getElementById('totalRevenueInput').value) || 0;
+            const revenuePeriod = document.getElementById('revenuePeriod').value;
+            let totalMonthlyRevenue = totalRevenueInput;
+            if (revenuePeriod === 'daily') {
+                totalMonthlyRevenue = totalRevenueInput * DAYS_IN_MONTH; // 日收益转月收益
             }
+            document.getElementById('totalMonthlyRevenueSummary').textContent = `总预计每月收益：${totalMonthlyRevenue.toFixed(0)} 元`;
 
-            const totalMonthlyExpenditure = totalMonthlyRecurringCost + additionalMonthlyCost;
-            const monthlyProfitLoss = monthlyRevenue - totalMonthlyExpenditure;
+
+            // 其他每月成本 (用户输入)
+            const additionalMonthlyCostInput = parseFloat(document.getElementById('additionalMonthlyCost').value) || 0;
+            const additionalCostPeriod = document.getElementById('additionalCostPeriod').value;
+            let calculatedAdditionalCost = additionalMonthlyCostInput;
+            if (additionalCostPeriod === 'daily') {
+                calculatedAdditionalCost = additionalMonthlyCostInput * DAYS_IN_MONTH; // 日成本转月成本
+            }
+            document.getElementById('calculatedAdditionalCost').textContent = `其他预计每月成本：${calculatedAdditionalCost.toFixed(0)} 元`;
+
+            // 所有“每月固定成本”项 (来自推荐配置和自定义硬件)
+            let totalMonthlyRecurringFromConfig = 0;
+            for (const key in costs.monthly) {
+                totalMonthlyRecurringFromConfig += costs.monthly[key];
+            }
+            document.getElementById('totalMonthlyCostSummary').textContent = `总预计每月固定成本（含宽带月租）：${(totalMonthlyRecurringFromConfig + calculatedAdditionalCost).toFixed(0)} 元`;
+
+
+            const totalMonthlyExpenditure = totalMonthlyRecurringFromConfig + calculatedAdditionalCost; // 总月支出 = 配置中每月项 + 用户额外每月成本
+            const monthlyProfitLoss = totalMonthlyRevenue - totalMonthlyExpenditure; // 收益减去成本
 
             const profitLossResultDiv = document.getElementById('profitLossResult');
             profitLossResultDiv.textContent = `每月盈亏：${monthlyProfitLoss.toFixed(0)} 元`;
